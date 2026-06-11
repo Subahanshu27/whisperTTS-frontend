@@ -11,7 +11,8 @@
        CONFIG — where the Flask backend is running.
        The Flask demo listens on :5000 by default.
        ════════════════════════════════════════════════════════════════ */
-    var API_BASE = "http://localhost:5000";
+    //var API_BASE = "http://localhost:5000";
+    var API_BASE = "https://3.224.107.180.nip.io";
     var POLL_MS = 2500; // matches the backend's POLL_INTERVAL_SECONDS
   
     // ── Inline the Floyo wordmark (light paths, tinted via currentColor) ──
