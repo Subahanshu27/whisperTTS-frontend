@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Cobalt scale — Floyo DS</title>
+<link rel="stylesheet" href="../colors_and_type.css" />
+<style>
+  html, body { margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--fg); font-family: var(--ff-sans); padding: 32px; }
+  .row { display: flex; align-items: baseline; gap: 12px; margin-bottom: 4px; }
+  .h { display: flex; align-items: baseline; gap: 12px; margin-bottom: 16px; }
+  .h .title { font-family: var(--ff-display); font-size: 28px; line-height: 1; }
+  .h .sub { font-family: var(--ff-sans); font-size: 13px; color: var(--fg-muted); }
+  .scale { display: grid; grid-template-columns: repeat(10, 1fr); gap: 0; border-radius: 12px; overflow: hidden; border: 1px solid var(--border); }
+  .swatch { aspect-ratio: 1 / 1.1; display: flex; flex-direction: column; justify-content: flex-end; padding: 12px; font-family: var(--ff-sans); font-size: 11px; line-height: 1.3; }
+  .swatch .stop { font-weight: 600; opacity: .9; }
+  .swatch .hex { font-family: var(--ff-mono); opacity: .8; }
+  .light { color: rgba(255,255,255,0.95); }
+  .dark  { color: rgba(10, 16, 46, 0.85); }
+  .note { margin-top: 16px; font-size: 13px; color: var(--fg-muted); max-width: 720px; line-height: 1.6; }
+  .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 32px; }
+  .surface { border-radius: 12px; padding: 24px; min-height: 220px; }
+  .surface .label { font-family: var(--ff-pixel); font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; opacity: .7; margin-bottom: 12px; }
+  .surface .name { font-family: var(--ff-display); font-size: 32px; line-height: 1.1; margin: 0 0 8px; }
+  .surface .body { font-size: 14px; line-height: 1.5; opacity: .9; max-width: 36ch; }
+  .surface .hex  { font-family: var(--ff-mono); font-size: 12px; opacity: .6; margin-top: 12px; }
+</style>
+</head>
+<body>
+  <div class="h">
+    <div class="title">Cobalt</div>
+    <div class="sub">deep navy — technical / API / developer surface · added 26-05</div>
+  </div>
+  <div class="scale">
+    <div class="swatch dark"  style="background: var(--cobalt-1)"><span class="stop">1</span><span class="hex">#EEF2FF</span></div>
+    <div class="swatch dark"  style="background: var(--cobalt-2)"><span class="stop">2</span><span class="hex">#D3DCFF</span></div>
+    <div class="swatch dark"  style="background: var(--cobalt-3)"><span class="stop">3</span><span class="hex">#A4BEFF</span></div>
+    <div class="swatch dark"  style="background: var(--cobalt-4)"><span class="stop">4</span><span class="hex">#7396FF</span></div>
+    <div class="swatch light" style="background: var(--cobalt-5)"><span class="stop">5</span><span class="hex">#475DCE</span></div>
+    <div class="swatch light" style="background: var(--cobalt-6)"><span class="stop">6</span><span class="hex">#2E419E</span></div>
+    <div class="swatch light" style="background: var(--cobalt-7)"><span class="stop">7</span><span class="hex">#192765</span></div>
+    <div class="swatch light" style="background: var(--cobalt-8)"><span class="stop">8 ·  page</span><span class="hex">#101844</span></div>
+    <div class="swatch light" style="background: var(--cobalt-9)"><span class="stop">9 ·  card</span><span class="hex">#0A102E</span></div>
+    <div class="swatch light" style="background: var(--cobalt-10)"><span class="stop">10</span><span class="hex">#050818</span></div>
+  </div>
+  <p class="note">
+    Cobalt is the <strong>technical / API / developer</strong> counterpart to Ube Violet (the <strong>playful / product / creator</strong> surface). Both are valid inverted surfaces. Pick by audience: API endpoint pages, docs, dev marketing → Cobalt. Workflow runner, gallery, creator pages → Ube. Cobalt is a <em>surface family</em>, not an accent — it's distinct from Blueberry (which is a brighter info-blue accent).
+  </p>
+
+  <div class="pair">
+    <div class="surface" style="background: var(--ube-10); color: white;">
+      <div class="label">surface-violet · playful</div>
+      <h3 class="name" style="font-family: var(--ff-display);">Run any ComfyUI workflow.</h3>
+      <p class="body">Browse, fork, and run thousands of community workflows — right in your browser.</p>
+      <div class="hex">--bg-inverted · #1A0C34</div>
+    </div>
+    <div class="surface" style="background: var(--cobalt-8); color: white;">
+      <div class="label" style="color: var(--cobalt-3)">surface-cobalt · technical</div>
+      <h3 class="name" style="font-family: var(--ff-display);">Every workflow is an API endpoint.</h3>
+      <p class="body" style="color: var(--cobalt-3)">Ship world-class AI visual assets without rolling your own backend. Pick a workflow, copy the endpoint — done.</p>
+      <div class="hex" style="color: var(--cobalt-4)">--bg-cobalt · #101844</div>
+    </div>
+  </div>
+</body>
+</html>

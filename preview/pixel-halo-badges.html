@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Pixel halo badges — Floyo DS</title>
+<link rel="stylesheet" href="../colors_and_type.css" />
+<style>
+  html, body { margin: 0; padding: 0; }
+  body { background: var(--cobalt-8); color: white; font-family: var(--ff-sans); padding: 56px 48px; min-height: 100vh; box-sizing: border-box; }
+  .h { display: flex; align-items: baseline; gap: 12px; margin-bottom: 32px; }
+  .h .title { font-family: var(--ff-display); font-size: 28px; line-height: 1; }
+  .h .sub { font-size: 13px; color: var(--cobalt-3); }
+  .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 32px 64px; max-width: 760px; margin-bottom: 56px; }
+  .row { display: flex; align-items: center; gap: 16px; }
+  .row .name { font-family: var(--ff-mono); font-size: 11px; color: var(--cobalt-3); }
+  .demo { background: var(--cobalt-9); border-radius: 12px; padding: 64px 32px; display: flex; flex-direction: column; gap: 16px; align-items: flex-start; }
+  .demo .kicker-row { display: flex; align-items: center; gap: 16px; }
+  .demo h2 { font-family: var(--ff-display); font-size: 48px; line-height: 1.15; letter-spacing: -0.02em; margin: 0; max-width: 16ch; }
+  .demo p  { color: var(--cobalt-3); max-width: 44ch; line-height: 1.6; margin: 0; }
+  .note { font-size: 13px; color: var(--cobalt-3); max-width: 720px; line-height: 1.6; margin-top: 24px; }
+  hr { border: none; border-top: 1px solid var(--cobalt-7); margin: 56px 0 32px; }
+  h3.section { font-family: var(--ff-pixel); font-size: 14px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--cobalt-3); margin: 0 0 24px; }
+</style>
+</head>
+<body>
+  <div class="h">
+    <div class="title">Pixel halo badges</div>
+    <div class="sub">Multi-layer ring stacks for pixel chips on dark surfaces · added 26-05</div>
+  </div>
+
+  <h3 class="section">Variants</h3>
+  <div class="grid">
+    <div class="row"><span class="pixel-badge pixel-badge-cobalt">NEW!</span><span class="name">.pixel-badge-cobalt</span></div>
+    <div class="row"><span class="pixel-badge pixel-badge-violet">ALPHA</span><span class="name">.pixel-badge-violet</span></div>
+    <div class="row"><span class="pixel-badge pixel-badge-mint">LIVE</span><span class="name">.pixel-badge-mint</span></div>
+    <div class="row"><span class="pixel-badge pixel-badge-lemon">BETA</span><span class="name">.pixel-badge-lemon</span></div>
+  </div>
+
+  <hr />
+  <h3 class="section">In context — API hero</h3>
+  <div class="demo">
+    <div class="kicker-row">
+      <span class="pixel-badge pixel-badge-cobalt">NEW!</span>
+      <span class="kicker kicker-cobalt-bright">API ACCESS IS LIVE!</span>
+    </div>
+    <h2>Every workflow is an API endpoint.</h2>
+    <p>Ship world-class AI visual assets in your app without rolling your own backend. Pick a workflow, tinker, click "Copy API endpoint" — done.</p>
+  </div>
+
+  <p class="note">
+    Pixel badges are paired with <code style="font-family: var(--ff-mono); color: var(--cobalt-2)">.kicker-*</code> labels in <code style="font-family: var(--ff-mono); color: var(--cobalt-2)">.title-5</code> type. One per section. Always on a dark surface — the halo doesn't read on white.
+  </p>
+</body>
+</html>

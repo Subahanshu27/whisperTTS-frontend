@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
+  <path d="M 10 2 L 10 0 L 4 0 L 4 2 L 10 2 Z" fill="currentColor" fill-rule="nonzero"></path>
+  <path d="M 12 2 L 10 2 L 10 4 L 12 4 L 12 2 Z" fill="currentColor" fill-rule="nonzero"></path>
+  <path d="M 12 10 L 14 10 L 14 4 L 12 4 L 12 10 Z" fill="currentColor" fill-rule="nonzero"></path>
+  <path d="M 12 10 L 10 10 L 10 12 L 12 12 L 12 10 Z" fill="currentColor" fill-rule="nonzero"></path>
+  <path d="M 18 16 L 18 14 L 16 14 L 16 12 L 12 12 L 12 16 L 14 16 L 14 18 L 16 18 L 16 20 L 18 20 L 18 18 L 20 18 L 20 16 L 18 16 Z" fill="currentColor" fill-rule="nonzero"></path>
+  <path d="M 4 12 L 4 14 L 10 14 L 10 12 L 4 12 Z" fill="currentColor" fill-rule="nonzero"></path>
+  <path d="M 4 10 L 2 10 L 2 12 L 4 12 L 4 10 Z" fill="currentColor" fill-rule="nonzero"></path>
+  <path d="M 2 4 L 0 4 L 0 10 L 2 10 L 2 4 Z" fill="currentColor" fill-rule="nonzero"></path>
+  <path d="M 4 2 L 2 2 L 2 4 L 4 4 L 4 2 Z" fill="currentColor" fill-rule="nonzero"></path>
+</svg>

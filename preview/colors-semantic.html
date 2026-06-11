@@ -1,0 +1,19 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Semantic colors</title>
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  html,body{margin:0;padding:0;background:#fff}
+  body{font-family:var(--ff-sans);padding:16px;display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+  .tile{border-radius:8px;border:1px solid var(--border);overflow:hidden;display:flex;flex-direction:column}
+  .swatch{height:64px}
+  .meta{padding:10px;display:flex;flex-direction:column;gap:2px}
+  .label{font-size:13px;font-weight:600;color:var(--fg)}
+  .desc{font-size:11px;color:var(--fg-muted)}
+  .hex{font-family:var(--ff-mono);font-size:10px;color:var(--fg-muted)}
+</style></head>
+<body class="floyo-base">
+  <div class="tile"><div class="swatch" style="background:var(--mint-5)"></div><div class="meta"><div class="label">Success — Mint</div><div class="desc">Confirmations, runs complete</div><div class="hex">#069252</div></div></div>
+  <div class="tile"><div class="swatch" style="background:var(--lemon-5)"></div><div class="meta"><div class="label">Warning — Lemon</div><div class="desc">Heads-up, soft caution</div><div class="hex">#F5C813</div></div></div>
+  <div class="tile"><div class="swatch" style="background:var(--raspberry-5)"></div><div class="meta"><div class="label">Danger — Raspberry</div><div class="desc">Errors, destructive</div><div class="hex">#EA2B6B</div></div></div>
+  <div class="tile"><div class="swatch" style="background:var(--blueberry-5)"></div><div class="meta"><div class="label">Info — Blueberry</div><div class="desc">Tips, neutral updates</div><div class="hex">#409AEB</div></div></div>
+</body></html>

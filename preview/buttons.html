@@ -1,0 +1,32 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Buttons</title>
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  html,body{margin:0;padding:0;background:#fff}
+  body{font-family:var(--ff-sans);padding:18px;display:flex;flex-direction:column;gap:12px;align-items:flex-start}
+  .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  .btn{font-family:var(--ff-sans);font-weight:600;letter-spacing:.10em;text-transform:uppercase;border-radius:999px;border:none;cursor:pointer;padding:14px 22px;font-size:13px;transition:background var(--dur) var(--ease-out)}
+  .btn-primary{background:var(--ube-5);color:#fff}
+  .btn-primary:hover{background:var(--ube-6)}
+  .btn-secondary{background:var(--ube-1);color:var(--ube-7);border:1px solid var(--ube-3)}
+  .btn-ghost{background:transparent;color:var(--ube-6);border:1px solid transparent}
+  .btn-ghost:hover{background:var(--ube-1)}
+  .btn-danger{background:var(--raspberry-5);color:#fff}
+  .btn-success{background:var(--mint-5);color:#fff}
+  .btn-sm{padding:8px 14px;font-size:11px;letter-spacing:.04em}
+  .lbl{font-family:var(--ff-mono);font-size:10px;color:var(--fg-muted);width:64px}
+</style></head>
+<body class="floyo-base">
+  <div class="row"><span class="lbl">Large</span>
+    <button class="btn btn-primary">Run workflow</button>
+    <button class="btn btn-secondary">Save draft</button>
+    <button class="btn btn-ghost">Cancel</button>
+    <button class="btn btn-danger">Delete</button>
+    <button class="btn btn-success">Publish</button>
+  </div>
+  <div class="row"><span class="lbl">Small</span>
+    <button class="btn btn-primary btn-sm">RUN</button>
+    <button class="btn btn-secondary btn-sm">DUPLICATE</button>
+    <button class="btn btn-ghost btn-sm">SHARE</button>
+  </div>
+</body></html>

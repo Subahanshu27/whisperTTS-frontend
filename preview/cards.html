@@ -1,0 +1,21 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Cards</title>
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  html,body{margin:0;padding:0;background:var(--bg-subtle)}
+  body{font-family:var(--ff-sans);padding:18px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+  .card{background:#fff;border:1px solid var(--border);border-radius:12px;overflow:hidden;display:flex;flex-direction:column}
+  .thumb{height:110px;background:linear-gradient(135deg,var(--ube-3),var(--ube-5));position:relative}
+  .thumb.b{background:linear-gradient(135deg,var(--mint-3),var(--blueberry-5))}
+  .thumb.c{background:linear-gradient(135deg,var(--lemon-3),var(--tangerine-5))}
+  .badge{position:absolute;top:8px;left:8px;background:rgba(26,12,52,.7);color:#fff;font-family:var(--ff-mono);font-size:10px;padding:3px 7px;border-radius:4px}
+  .meta{padding:10px 12px;display:flex;flex-direction:column;gap:4px}
+  .title{font-size:13px;font-weight:600;color:var(--fg)}
+  .sub{font-size:11px;color:var(--fg-muted);display:flex;align-items:center;gap:8px}
+  .dot{width:14px;height:14px;border-radius:50%;background:var(--ube-3)}
+</style></head>
+<body class="floyo-base">
+  <div class="card"><div class="thumb"><span class="badge">VERIFIED</span></div><div class="meta"><div class="title">anime-portrait-v3</div><div class="sub"><span class="dot"></span>by @miya · 1.2k runs</div></div></div>
+  <div class="card"><div class="thumb b"></div><div class="meta"><div class="title">studio-bg-clean</div><div class="sub"><span class="dot" style="background:var(--mint-3)"></span>by @kez · 308 runs</div></div></div>
+  <div class="card"><div class="thumb c"></div><div class="meta"><div class="title">retro-arcade-style</div><div class="sub"><span class="dot" style="background:var(--tangerine-3)"></span>by @doc · 64 runs</div></div></div>
+</body></html>

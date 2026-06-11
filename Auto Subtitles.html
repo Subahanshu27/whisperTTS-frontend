@@ -1,0 +1,610 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Auto Subtitles · Floyo</title>
+<link rel="stylesheet" href="colors_and_type.css" />
+<style>
+/* ─────────────────────────────────────────────────────────────────
+   Auto Subtitles — a Floyo app surface
+   Built on the Floyo design system (colors_and_type.css)
+   ───────────────────────────────────────────────────────────────── */
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; height: 100%; }
+body {
+  background: var(--bg-subtle);
+  font-family: var(--ff-sans);
+  color: var(--fg);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+::selection { background: var(--ube-2); }
+
+/* Pixel-mask icon helper — tints any pixel SVG to currentColor */
+.ic {
+  display: inline-block; width: 20px; height: 20px; flex: none;
+  background: currentColor;
+  -webkit-mask: var(--ic) center / contain no-repeat;
+  mask: var(--ic) center / contain no-repeat;
+}
+
+/* ── App shell ──────────────────────────────────────────────────── */
+.layout { display: grid; grid-template-columns: 64px 264px 1fr; height: 100vh; overflow: hidden; }
+
+/* Brand rail */
+.rail { background: var(--ube-10); display: flex; flex-direction: column; align-items: center; padding: 14px 0; gap: 6px; }
+.rail .mark { width: 34px; height: 34px; border-radius: 9px; background: linear-gradient(140deg, var(--ube-4), var(--ube-6)); display: grid; place-items: center; color: #fff; font-family: var(--ff-display); font-size: 22px; line-height: 1; margin-bottom: 8px; }
+.rail .ico { width: 42px; height: 42px; border-radius: 10px; display: grid; place-items: center; cursor: pointer; color: var(--ube-3); transition: background var(--dur) var(--ease-out), color var(--dur) var(--ease-out); position: relative; }
+.rail .ico .ic { width: 22px; height: 22px; }
+.rail .ico:hover { background: var(--ube-8); color: var(--ube-2); }
+.rail .ico.active { background: var(--ube-7); color: #fff; }
+.rail .grow { flex: 1; }
+.rail .avatar { width: 34px; height: 34px; border-radius: 50%; background: linear-gradient(135deg, var(--mint-3), var(--blueberry-5)); border: 2px solid var(--ube-7); cursor: pointer; }
+
+/* Sidebar */
+.side { background: #fff; border-right: 1px solid var(--border); display: flex; flex-direction: column; min-height: 0; }
+.side-top { padding: 20px 18px 16px; border-bottom: 1px solid var(--border); }
+.brand { display: flex; align-items: center; gap: 10px; color: var(--ube-7); }
+.brand .logo { height: 26px; width: auto; color: var(--ube-7); }
+.brand .logo svg { height: 26px; width: auto; display: block; }
+.appchip { display: inline-flex; align-items: center; gap: 7px; margin-top: 16px; }
+.appchip .dot { width: 26px; height: 26px; border-radius: 7px; background: var(--ube-1); border: 1px solid var(--ube-2); display: grid; place-items: center; color: var(--ube-6); }
+.appchip .dot .ic { width: 15px; height: 15px; }
+.appchip .nm { font-weight: 700; font-size: 14px; letter-spacing: -0.01em; }
+.appchip .badge { font-family: var(--ff-pixel); font-size: 11px; letter-spacing: .08em; color: var(--ube-6); background: var(--ube-1); border: 1px solid var(--ube-2); border-radius: 4px; padding: 1px 5px; }
+
+.side-body { flex: 1; overflow-y: auto; padding: 16px 14px; display: flex; flex-direction: column; gap: 22px; }
+.newbtn { width: 100%; }
+.sec .lbl { font-size: 10px; font-weight: 700; letter-spacing: .09em; text-transform: uppercase; color: var(--fg-subtle); padding: 0 8px 8px; }
+.job { display: flex; align-items: center; gap: 10px; padding: 9px 8px; border-radius: 9px; cursor: pointer; transition: background var(--dur) var(--ease-out); }
+.job:hover { background: var(--ube-1); }
+.job .thumb { width: 38px; height: 26px; border-radius: 5px; flex: none; background: linear-gradient(135deg, var(--ube-4), var(--ube-7)); position: relative; overflow: hidden; }
+.job .thumb.b { background: linear-gradient(135deg, var(--blueberry-4), var(--ube-6)); }
+.job .thumb.c { background: linear-gradient(135deg, var(--tangerine-3), var(--raspberry-5)); }
+.job .info { min-width: 0; flex: 1; }
+.job .nm { font-size: 12.5px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.job .meta { font-size: 11px; color: var(--fg-muted); display: flex; align-items: center; gap: 6px; margin-top: 2px; }
+.stat-dot { width: 7px; height: 7px; border-radius: 50%; flex: none; }
+.stat-dot.ok { background: var(--mint-5); }
+.stat-dot.run { background: var(--lemon-5); }
+.stat-dot.err { background: var(--raspberry-5); }
+
+/* skeleton */
+.skel { background: linear-gradient(90deg, var(--ube-1) 25%, #efe9f8 37%, var(--ube-1) 63%); background-size: 400% 100%; animation: shimmer 1.4s ease infinite; border-radius: 5px; }
+@keyframes shimmer { 0% { background-position: 100% 0; } 100% { background-position: -100% 0; } }
+
+.side-foot { padding: 14px; border-top: 1px solid var(--border); }
+.credits { background: var(--ube-1); border: 1px solid var(--ube-2); border-radius: 12px; padding: 12px 13px; }
+.credits .row { display: flex; align-items: center; justify-content: space-between; font-size: 12px; }
+.credits .k { color: var(--fg-muted); display: flex; align-items: center; gap: 6px; }
+.credits .v { font-family: var(--ff-mono); font-weight: 600; color: var(--ube-7); }
+.credits .bar { height: 6px; border-radius: 999px; background: #fff; border: 1px solid var(--ube-2); margin-top: 9px; overflow: hidden; }
+.credits .bar i { display: block; height: 100%; width: 64%; background: linear-gradient(90deg, var(--ube-4), var(--ube-6)); }
+
+/* Main */
+.main { overflow-y: auto; padding: 26px clamp(20px, 5vw, 64px) 96px; }
+.page-head { max-width: 940px; margin: 0 auto 26px; }
+.crumb { display: flex; align-items: center; gap: 8px; color: var(--fg-muted); font-size: 12px; margin-bottom: 16px; }
+.crumb .ic { width: 13px; height: 13px; opacity: .6; }
+.crumb b { color: var(--fg); font-weight: 600; }
+.page-title { font-family: var(--ff-sans); font-weight: 800; font-size: clamp(28px, 4vw, 40px); letter-spacing: -0.025em; color: var(--ube-8); margin: 0; line-height: 1.05; }
+.page-sub { font-size: 15px; color: var(--fg-muted); margin: 10px 0 0; max-width: 56ch; line-height: 1.5; }
+
+.stage { max-width: 940px; margin: 0 auto; }
+[data-state] { display: none; }
+[data-state].on { display: block; animation: rise var(--dur-slow) var(--ease-out); }
+@keyframes rise { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+/* Buttons */
+.btn { font-family: var(--ff-sans); font-weight: 600; letter-spacing: .09em; text-transform: uppercase; border-radius: 999px; border: none; cursor: pointer; padding: 13px 22px; font-size: 12px; display: inline-flex; align-items: center; justify-content: center; gap: 9px; transition: background var(--dur) var(--ease-out), box-shadow var(--dur) var(--ease-out), transform var(--dur-fast) var(--ease-out); }
+.btn .ic { width: 15px; height: 15px; }
+.btn:active { transform: translateY(1px); }
+.btn-primary { background: linear-gradient(135deg, var(--ube-4), var(--ube-6)); color: #fff; box-shadow: var(--shadow-violet); }
+.btn-primary:hover { background: linear-gradient(135deg, var(--ube-5), var(--ube-7)); }
+.btn-ghost { background: #fff; color: var(--ube-7); border: 1px solid var(--ube-3); }
+.btn-ghost:hover { background: var(--ube-1); }
+.btn-soft { background: var(--ube-1); color: var(--ube-7); }
+.btn-soft:hover { background: var(--ube-2); }
+.btn-block { width: 100%; }
+.btn-lg { padding: 16px 26px; font-size: 13px; }
+.btn[disabled] { opacity: .5; cursor: not-allowed; box-shadow: none; }
+
+/* Card */
+.card { background: #fff; border: 1px solid var(--border); border-radius: 20px; }
+
+/* ── EMPTY / UPLOAD ─────────────────────────────────────────────── */
+.hero-card { padding: 28px; background: linear-gradient(180deg, var(--ube-1), #fff 62%); border-color: var(--ube-2); }
+.dropzone { border: 2px dashed var(--ube-4); border-radius: 16px; background: rgba(255,255,255,.6); padding: 56px 32px; text-align: center; cursor: pointer; transition: background var(--dur) var(--ease-out), border-color var(--dur) var(--ease-out); }
+.dropzone:hover { background: #fff; border-color: var(--ube-5); }
+.dropzone.drag { background: #fff; border-color: var(--ube-5); box-shadow: var(--shadow-violet); }
+.dz-ico { width: 72px; height: 72px; border-radius: 18px; background: #fff; border: 1px solid var(--ube-2); display: grid; place-items: center; margin: 0 auto 20px; color: var(--ube-5); box-shadow: var(--shadow-sm); }
+.dz-ico .ic { width: 36px; height: 24px; }
+.dz-title { font-size: 22px; font-weight: 700; letter-spacing: -0.01em; color: var(--ube-8); }
+.dz-sub { font-size: 14px; color: var(--fg-muted); margin-top: 8px; }
+.dz-actions { margin-top: 22px; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+.formats { display: flex; gap: 8px; justify-content: center; margin-top: 22px; flex-wrap: wrap; }
+.fmt { font-family: var(--ff-mono); font-size: 11px; color: var(--ube-7); background: var(--ube-1); border: 1px solid var(--ube-2); border-radius: 5px; padding: 4px 9px; }
+.poweredby { display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 24px; font-size: 12.5px; color: var(--fg-muted); }
+.poweredby .ic { width: 14px; height: 14px; color: var(--ube-5); }
+.poweredby b { color: var(--ube-7); font-weight: 600; }
+
+/* ── READY (preview + settings) ─────────────────────────────────── */
+.work { display: grid; grid-template-columns: minmax(0,1.05fr) minmax(0,1fr); gap: 18px; align-items: start; }
+.video-card { padding: 14px; }
+.player { position: relative; aspect-ratio: 16/9; border-radius: 14px; overflow: hidden; background: radial-gradient(120% 120% at 30% 20%, #4a2f73, #1a0c34 80%); container-type: inline-size; }
+.player .grain { position: absolute; inset: 0; background:
+  linear-gradient(135deg, rgba(175,127,244,.35), rgba(16,24,68,0) 60%),
+  radial-gradient(60% 50% at 70% 75%, rgba(60,225,149,.18), transparent); }
+.player .play { position: absolute; inset: 0; margin: auto; width: 64px; height: 64px; border-radius: 50%; background: rgba(255,255,255,.16); backdrop-filter: blur(6px); border: 1px solid rgba(255,255,255,.35); display: grid; place-items: center; color: #fff; cursor: pointer; transition: transform var(--dur) var(--ease-out), background var(--dur) var(--ease-out); }
+.player .play:hover { transform: scale(1.06); background: rgba(255,255,255,.26); }
+.player .dur { position: absolute; right: 10px; bottom: 10px; background: rgba(16,12,30,.7); color: #fff; font-family: var(--ff-mono); font-size: 11px; padding: 3px 8px; border-radius: 5px; }
+.player .live-tag { position: absolute; left: 10px; top: 10px; font-family: var(--ff-pixel); font-size: 11px; letter-spacing: .08em; color: var(--mint-2); background: rgba(0,37,20,.6); border: 1px solid var(--mint-5); border-radius: 4px; padding: 2px 7px; }
+
+/* live caption overlay */
+.cap-layer { position: absolute; left: 0; right: 0; display: flex; justify-content: center; padding: 0 8%; pointer-events: none; transition: top var(--dur) var(--ease-out), bottom var(--dur) var(--ease-out); }
+.cap-layer.pos-bottom { bottom: 10%; }
+.cap-layer.pos-middle { top: 50%; transform: translateY(-50%); }
+.cap-layer.pos-top { top: 10%; }
+.cap { display: inline-block; line-height: 1.25; max-width: 100%; text-wrap: balance; }
+
+.file-row { display: flex; align-items: center; gap: 12px; padding: 14px 6px 4px; }
+.file-row .ficon { width: 40px; height: 40px; border-radius: 9px; background: var(--ube-1); border: 1px solid var(--ube-2); display: grid; place-items: center; color: var(--ube-6); flex: none; }
+.file-row .ficon .ic { width: 20px; height: 20px; }
+.file-row .fmeta { min-width: 0; flex: 1; }
+.file-row .fname { font-weight: 600; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.file-row .fsub { font-size: 12px; color: var(--fg-muted); font-family: var(--ff-mono); margin-top: 3px; }
+.file-row .fbtns { display: flex; gap: 6px; }
+.iconbtn { width: 34px; height: 34px; border-radius: 9px; border: 1px solid var(--border); background: #fff; display: grid; place-items: center; cursor: pointer; color: var(--fg-muted); transition: background var(--dur) var(--ease-out), color var(--dur) var(--ease-out), border-color var(--dur) var(--ease-out); }
+.iconbtn .ic { width: 16px; height: 16px; }
+.iconbtn:hover { background: var(--ube-1); color: var(--ube-7); border-color: var(--ube-3); }
+.iconbtn.danger:hover { background: var(--raspberry-1); color: var(--raspberry-6); border-color: var(--raspberry-3); }
+
+/* settings panel */
+.panel { padding: 20px; }
+.panel-grp + .panel-grp { margin-top: 22px; padding-top: 22px; border-top: 1px solid var(--border); }
+.grp-h { display: flex; align-items: center; gap: 8px; margin-bottom: 14px; }
+.grp-h .ic { width: 15px; height: 15px; color: var(--ube-5); }
+.grp-h .t { font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--fg-subtle); }
+.field { margin-bottom: 14px; }
+.field:last-child { margin-bottom: 0; }
+.field > label { display: block; font-size: 12.5px; font-weight: 600; color: var(--fg); margin-bottom: 7px; }
+.field .hint { font-weight: 400; color: var(--fg-subtle); }
+
+/* searchable select */
+.combo { position: relative; }
+.combo .control { display: flex; align-items: center; gap: 8px; border: 1px solid var(--border); border-radius: 9px; padding: 10px 12px; cursor: pointer; background: #fff; transition: border-color var(--dur) var(--ease-out); }
+.combo .control:hover { border-color: var(--ube-3); }
+.combo.open .control { border-color: var(--ube-4); box-shadow: 0 0 0 3px var(--ube-1); }
+.combo .control .flag { font-size: 15px; }
+.combo .control .val { flex: 1; font-size: 13.5px; font-weight: 500; }
+.combo .control .ic { width: 16px; height: 16px; color: var(--fg-muted); transition: transform var(--dur) var(--ease-out); }
+.combo.open .control .ic { transform: rotate(180deg); }
+.combo .menu { position: absolute; z-index: 30; left: 0; right: 0; top: calc(100% + 6px); background: #fff; border: 1px solid var(--border); border-radius: 12px; box-shadow: var(--shadow-lg); padding: 8px; display: none; }
+.combo.open .menu { display: block; animation: rise var(--dur) var(--ease-out); }
+.combo .search { display: flex; align-items: center; gap: 8px; background: var(--ube-1); border: 1px solid var(--ube-2); border-radius: 8px; padding: 8px 10px; margin-bottom: 6px; }
+.combo .search .ic { width: 15px; height: 15px; color: var(--fg-muted); }
+.combo .search input { border: none; background: transparent; outline: none; font: inherit; font-size: 13px; flex: 1; color: var(--fg); }
+.combo .list { max-height: 220px; overflow-y: auto; }
+.combo .opt { display: flex; align-items: center; gap: 9px; padding: 9px 10px; border-radius: 8px; cursor: pointer; font-size: 13.5px; }
+.combo .opt:hover, .combo .opt.hl { background: var(--ube-1); }
+.combo .opt.sel { color: var(--ube-7); font-weight: 600; }
+.combo .opt .check { margin-left: auto; color: var(--ube-5); display: none; }
+.combo .opt.sel .check { display: block; }
+.combo .opt .check .ic { width: 15px; height: 15px; }
+.combo .empty { padding: 14px; text-align: center; color: var(--fg-subtle); font-size: 12.5px; }
+
+/* segmented control */
+.seg { display: flex; background: var(--ube-1); border: 1px solid var(--ube-2); border-radius: 9px; padding: 3px; gap: 3px; }
+.seg button { flex: 1; border: none; background: transparent; font: inherit; font-size: 12.5px; font-weight: 600; color: var(--fg-muted); padding: 8px 6px; border-radius: 6px; cursor: pointer; transition: background var(--dur) var(--ease-out), color var(--dur) var(--ease-out); }
+.seg button.on { background: #fff; color: var(--ube-7); box-shadow: var(--shadow-sm); }
+
+.two { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+/* selects */
+.sel { width: 100%; border: 1px solid var(--border); border-radius: 9px; padding: 10px 36px 10px 12px; font: inherit; font-size: 13.5px; background-color: #fff; color: var(--fg); cursor: pointer; appearance: none; -webkit-appearance: none; }
+.sel-wrap { position: relative; }
+.sel-wrap .chev { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; color: var(--fg-muted); pointer-events: none; }
+.sel:hover { border-color: var(--ube-3); }
+.sel:focus { outline: none; border-color: var(--ube-4); box-shadow: 0 0 0 3px var(--ube-1); }
+
+/* swatches */
+.swatches { display: flex; gap: 8px; flex-wrap: wrap; }
+.sw { width: 30px; height: 30px; border-radius: 8px; cursor: pointer; border: 2px solid #fff; box-shadow: 0 0 0 1px var(--border); transition: transform var(--dur-fast) var(--ease-out); position: relative; }
+.sw:hover { transform: scale(1.08); }
+.sw.on { box-shadow: 0 0 0 2px var(--ube-5); }
+.sw.on::after { content: ""; position: absolute; inset: 0; margin: auto; width: 9px; height: 9px; border-radius: 2px; background: rgba(255,255,255,.9); mix-blend-mode: difference; }
+
+/* slider */
+.range { display: flex; align-items: center; gap: 12px; }
+.range input[type=range] { flex: 1; -webkit-appearance: none; appearance: none; height: 6px; border-radius: 999px; background: var(--ube-2); outline: none; }
+.range input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 20px; height: 20px; border-radius: 50%; background: #fff; border: 1px solid var(--ube-3); box-shadow: var(--shadow-sm); cursor: pointer; }
+.range input[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-radius: 50%; background: #fff; border: 1px solid var(--ube-3); cursor: pointer; }
+.range .num { font-family: var(--ff-mono); font-size: 12.5px; font-weight: 600; color: var(--ube-7); min-width: 54px; text-align: right; }
+
+/* toggle */
+.toggle-row { display: flex; align-items: center; justify-content: space-between; }
+.toggle { width: 44px; height: 26px; border-radius: 999px; background: var(--ube-2); border: none; cursor: pointer; position: relative; transition: background var(--dur) var(--ease-out); flex: none; }
+.toggle::after { content: ""; position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; border-radius: 50%; background: #fff; box-shadow: var(--shadow-sm); transition: transform var(--dur) var(--ease-out); }
+.toggle.on { background: var(--ube-5); }
+.toggle.on::after { transform: translateX(18px); }
+
+.cta-bar { margin-top: 22px; padding-top: 20px; border-top: 1px solid var(--border); }
+.cta-note { display: flex; align-items: center; gap: 7px; justify-content: center; font-size: 12px; color: var(--fg-muted); margin-top: 12px; }
+.cta-note .ic { width: 13px; height: 13px; }
+
+/* ── PROCESSING ─────────────────────────────────────────────────── */
+.proc { padding: 40px; text-align: center; max-width: 620px; margin: 0 auto; }
+.proc-ring { width: 64px; height: 64px; margin: 0 auto 22px; color: var(--ube-5); display: grid; place-items: center; }
+.proc-ring .ic { width: 46px; height: 46px; animation: spin 1s steps(8) infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.proc-pct { font-family: var(--ff-display); font-size: 56px; color: var(--ube-7); line-height: 1; }
+.proc-status { font-size: 14px; color: var(--fg-muted); margin-top: 10px; min-height: 21px; }
+.proc-bar { height: 10px; border-radius: 999px; background: var(--ube-1); border: 1px solid var(--ube-2); overflow: hidden; margin: 26px 0; }
+.proc-bar i { display: block; height: 100%; width: 0%; background: linear-gradient(90deg, var(--ube-4), var(--ube-6)); transition: width var(--dur-slow) var(--ease-out); }
+.steps { display: flex; flex-direction: column; gap: 4px; text-align: left; }
+.step { display: flex; align-items: center; gap: 13px; padding: 12px 14px; border-radius: 11px; transition: background var(--dur) var(--ease-out); }
+.step.active { background: var(--ube-1); }
+.step .marker { width: 26px; height: 26px; border-radius: 50%; flex: none; display: grid; place-items: center; border: 2px solid var(--ube-2); color: var(--fg-subtle); background: #fff; }
+.step .marker .ic { width: 14px; height: 14px; }
+.step .marker .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--ube-3); }
+.step.done .marker { background: var(--mint-5); border-color: var(--mint-5); color: #fff; }
+.step.active .marker { border-color: var(--ube-5); color: var(--ube-5); }
+.step.active .marker .ic { animation: spin 1s steps(8) infinite; }
+.step .txt { flex: 1; }
+.step .st { font-size: 13.5px; font-weight: 600; color: var(--fg); }
+.step.pending .st { color: var(--fg-muted); }
+.step .sd { font-size: 12px; color: var(--fg-subtle); margin-top: 2px; }
+.step .time { font-family: var(--ff-mono); font-size: 11px; color: var(--fg-subtle); }
+.proc-cancel { margin-top: 24px; }
+.linkbtn { background: none; border: none; color: var(--fg-muted); font: inherit; font-size: 12.5px; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
+.linkbtn:hover { color: var(--ube-7); }
+
+/* ── RESULT ─────────────────────────────────────────────────────── */
+.result-card { padding: 16px; }
+.result-head { display: flex; align-items: center; gap: 10px; padding: 6px 6px 16px; }
+.result-head .pill { display: inline-flex; align-items: center; gap: 7px; background: var(--mint-1); color: var(--mint-7); border: 1px solid var(--mint-3); border-radius: 999px; padding: 6px 12px; font-size: 12px; font-weight: 600; }
+.result-head .pill .ic { width: 14px; height: 14px; }
+.result-head .spec { margin-left: auto; font-family: var(--ff-mono); font-size: 11.5px; color: var(--fg-muted); }
+.controls { display: flex; align-items: center; gap: 12px; padding: 14px 8px 6px; }
+.controls .play-s { width: 38px; height: 38px; border-radius: 50%; background: var(--ube-5); color: #fff; display: grid; place-items: center; cursor: pointer; flex: none; }
+.controls .play-s:hover { background: var(--ube-6); }
+.scrub { flex: 1; height: 6px; border-radius: 999px; background: var(--ube-1); position: relative; cursor: pointer; }
+.scrub i { position: absolute; left: 0; top: 0; bottom: 0; width: 34%; background: linear-gradient(90deg, var(--ube-4), var(--ube-6)); border-radius: 999px; }
+.scrub i::after { content: ""; position: absolute; right: -7px; top: 50%; transform: translateY(-50%); width: 14px; height: 14px; border-radius: 50%; background: #fff; border: 1px solid var(--ube-4); box-shadow: var(--shadow-sm); }
+.controls .tcode { font-family: var(--ff-mono); font-size: 11.5px; color: var(--fg-muted); }
+.controls .iconbtn { width: 32px; height: 32px; }
+.result-actions { display: flex; gap: 12px; padding: 18px 6px 4px; flex-wrap: wrap; }
+.result-actions .btn { flex: 1; min-width: 180px; }
+
+/* ── ERROR ──────────────────────────────────────────────────────── */
+.errbox { padding: 44px 32px; text-align: center; max-width: 560px; margin: 0 auto; border-color: var(--raspberry-2); background: linear-gradient(180deg, var(--raspberry-1), #fff 60%); }
+.err-ico { width: 64px; height: 64px; border-radius: 16px; background: #fff; border: 1px solid var(--raspberry-2); display: grid; place-items: center; color: var(--raspberry-5); margin: 0 auto 20px; }
+.err-ico .ic { width: 34px; height: 34px; }
+.err-title { font-size: 22px; font-weight: 700; color: var(--strawberry-6); letter-spacing: -0.01em; }
+.err-msg { font-size: 14px; color: var(--fg-muted); margin-top: 10px; line-height: 1.55; }
+.err-detail { font-family: var(--ff-mono); font-size: 11.5px; color: var(--raspberry-6); background: var(--raspberry-1); border: 1px solid var(--raspberry-2); border-radius: 8px; padding: 8px 12px; margin: 18px auto 0; display: inline-block; }
+.err-actions { display: flex; gap: 12px; justify-content: center; margin-top: 24px; flex-wrap: wrap; }
+
+/* ── Mobile ─────────────────────────────────────────────────────── */
+.menu-btn, .scrim { display: none; }
+@media (max-width: 980px) {
+  .work { grid-template-columns: 1fr; }
+}
+@media (max-width: 860px) {
+  .layout { grid-template-columns: 1fr; }
+  .rail { display: none; }
+  .side { position: fixed; z-index: 60; left: 0; top: 0; bottom: 0; width: 280px; transform: translateX(-100%); transition: transform var(--dur-slow) var(--ease-out); box-shadow: var(--shadow-lg); }
+  body.nav-open .side { transform: none; }
+  .scrim { display: block; position: fixed; inset: 0; z-index: 55; background: rgba(26,12,52,.5); opacity: 0; pointer-events: none; transition: opacity var(--dur) var(--ease-out); }
+  body.nav-open .scrim { opacity: 1; pointer-events: auto; }
+  .menu-btn { display: grid; place-items: center; position: fixed; z-index: 50; left: 16px; top: 14px; width: 44px; height: 44px; border-radius: 12px; background: #fff; border: 1px solid var(--border); box-shadow: var(--shadow-md); cursor: pointer; color: var(--ube-7); }
+  .menu-btn .ic { width: 20px; height: 20px; }
+  .main { padding-top: 72px; }
+  .result-actions .btn { min-width: 0; }
+}
+</style>
+</head>
+<body class="floyo-base">
+
+<button class="menu-btn" id="menuBtn" aria-label="Menu"><i class="ic" style="--ic:url(assets/icons/bullet-list.svg)"></i></button>
+<div class="scrim" id="scrim"></div>
+
+<div class="layout">
+
+  <!-- BRAND RAIL -->
+  <nav class="rail">
+    <div class="mark">f.</div>
+    <div class="ico" title="Home"><i class="ic" style="--ic:url(assets/icons/box-pixel.svg)"></i></div>
+    <div class="ico" title="Discover"><i class="ic" style="--ic:url(assets/icons/search.svg)"></i></div>
+    <div class="ico active" title="Apps"><i class="ic" style="--ic:url(assets/icons/movie-production.svg)"></i></div>
+    <div class="ico" title="Models"><i class="ic" style="--ic:url(assets/icons/model-library.svg)"></i></div>
+    <div class="ico" title="My runs"><i class="ic" style="--ic:url(assets/icons/repeat.svg)"></i></div>
+    <div class="grow"></div>
+    <div class="ico" title="Docs"><i class="ic" style="--ic:url(assets/icons/documentation.svg)"></i></div>
+    <div class="avatar" title="Account"></div>
+  </nav>
+
+  <!-- SIDEBAR -->
+  <aside class="side">
+    <div class="side-top">
+      <div class="brand">
+        <span class="logo" id="logoSlot"></span>
+      </div>
+      <div class="appchip">
+        <span class="dot"><i class="ic" style="--ic:url(assets/icons/movie-production.svg)"></i></span>
+        <span class="nm">Auto Subtitles</span>
+        <span class="badge">AI</span>
+      </div>
+    </div>
+    <div class="side-body">
+      <button class="btn btn-primary btn-block newbtn" id="newBtn"><i class="ic" style="--ic:url(assets/icons/video-add.svg)"></i> New video</button>
+
+      <div class="sec">
+        <div class="lbl">Recent</div>
+        <div class="job" data-demo="result">
+          <div class="thumb"></div>
+          <div class="info"><div class="nm">product-demo-final.mp4</div><div class="meta"><span class="stat-dot ok"></span>Done · 2m ago</div></div>
+        </div>
+        <div class="job" data-demo="processing">
+          <div class="thumb b"></div>
+          <div class="info"><div class="nm">onboarding-walkthrough.mov</div><div class="meta"><span class="stat-dot run"></span>Processing · now</div></div>
+        </div>
+        <div class="job" data-demo="error">
+          <div class="thumb c"></div>
+          <div class="info"><div class="nm">webinar-q2-keynote.mp4</div><div class="meta"><span class="stat-dot err"></span>Failed · 1h ago</div></div>
+        </div>
+        <div class="job" style="pointer-events:none">
+          <div class="skel" style="width:38px;height:26px"></div>
+          <div class="info" style="display:flex;flex-direction:column;gap:6px"><div class="skel" style="width:80%;height:10px"></div><div class="skel" style="width:50%;height:9px"></div></div>
+        </div>
+      </div>
+    </div>
+    <div class="side-foot">
+      <div class="credits">
+        <div class="row"><span class="k"><i class="ic" style="--ic:url(assets/icons/coin.svg);width:14px;height:14px"></i> Render credits</span><span class="v">320 / 500</span></div>
+        <div class="bar"><i></i></div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main" id="main">
+    <div class="page-head">
+      <div class="crumb">Apps <i class="ic" style="--ic:url(assets/icons/chevron-right.svg)"></i> <b>Auto Subtitles</b></div>
+      <h1 class="page-title">Auto subtitles</h1>
+      <p class="page-sub">Add accurate, burned-in captions to any video. Powered by the Whisper auto-subtitles workflow on Floyo.</p>
+    </div>
+
+    <div class="stage" id="stage">
+
+      <!-- EMPTY / UPLOAD -->
+      <section data-state="empty" class="on">
+        <div class="card hero-card">
+          <div class="dropzone" id="dropzone">
+            <div class="dz-ico"><i class="ic" style="--ic:url(assets/icons/cloud.svg)"></i></div>
+            <div class="dz-title">Drop a video or click to upload</div>
+            <div class="dz-sub">We’ll transcribe the audio and burn styled captions right into the file.</div>
+            <div class="dz-actions">
+              <button class="btn btn-primary" id="pickBtn"><i class="ic" style="--ic:url(assets/icons/video-add.svg)"></i> Choose file</button>
+              <button class="btn btn-ghost" id="sampleBtn">Try a sample</button>
+            </div>
+            <div class="formats">
+              <span class="fmt">MP4</span><span class="fmt">MOV</span><span class="fmt">up to 500 MB</span><span class="fmt">≤ 30 min</span>
+            </div>
+          </div>
+          <div class="poweredby"><i class="ic" style="--ic:url(assets/icons/bolt.svg)"></i> Powered by <b>whisper-auto-subtitles</b> · runs on Floyo</div>
+        </div>
+      </section>
+
+      <!-- LOADING META (skeleton) -->
+      <section data-state="loading">
+        <div class="work">
+          <div class="card video-card">
+            <div class="player"><div class="grain"></div></div>
+            <div class="file-row">
+              <div class="skel" style="width:40px;height:40px;border-radius:9px"></div>
+              <div class="fmeta" style="display:flex;flex-direction:column;gap:8px"><div class="skel" style="width:60%;height:12px"></div><div class="skel" style="width:40%;height:10px"></div></div>
+            </div>
+          </div>
+          <div class="card panel">
+            <div class="skel" style="width:40%;height:12px;margin-bottom:16px"></div>
+            <div class="skel" style="width:100%;height:42px;border-radius:9px;margin-bottom:20px"></div>
+            <div class="skel" style="width:40%;height:12px;margin-bottom:16px"></div>
+            <div class="skel" style="width:100%;height:42px;border-radius:9px;margin-bottom:12px"></div>
+            <div class="skel" style="width:100%;height:42px;border-radius:9px"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- READY: preview + settings -->
+      <section data-state="ready">
+        <div class="work">
+          <!-- VIDEO PREVIEW -->
+          <div class="card video-card">
+            <div class="player">
+              <div class="grain"></div>
+              <div class="live-tag">LIVE PREVIEW</div>
+              <div class="play"><svg width="22" height="24" viewBox="0 0 22 24" fill="none" aria-hidden="true"><path d="M4 2h3v2h3v2h3v2h3v2h3v4h-3v2h-3v2h-3v2H7v2H4V2z" fill="currentColor"/></svg></div>
+              <div class="cap-layer pos-bottom" id="capLayer"><span class="cap" id="capText">So here’s how the whole thing works.</span></div>
+              <div class="dur" id="playerDur">2:34</div>
+            </div>
+            <div class="file-row">
+              <div class="ficon"><i class="ic" style="--ic:url(assets/icons/movie-production.svg)"></i></div>
+              <div class="fmeta">
+                <div class="fname" id="fName">product-demo-final.mp4</div>
+                <div class="fsub" id="fSub">2:34 · 48.2 MB · MP4</div>
+              </div>
+              <div class="fbtns">
+                <button class="iconbtn" id="replaceBtn" title="Replace"><i class="ic" style="--ic:url(assets/icons/reload.svg)"></i></button>
+                <button class="iconbtn danger" id="removeBtn" title="Remove"><i class="ic" style="--ic:url(assets/icons/close.svg)"></i></button>
+              </div>
+            </div>
+          </div>
+
+          <!-- SETTINGS -->
+          <div class="card panel">
+            <!-- Transcription -->
+            <div class="panel-grp">
+              <div class="grp-h"><i class="ic" style="--ic:url(assets/icons/earth.svg)"></i><span class="t">Transcription</span></div>
+              <div class="field">
+                <label>Spoken language <span class="hint">— what to transcribe</span></label>
+                <div class="combo" id="langCombo">
+                  <div class="control"><span class="flag" id="langFlag">✨</span><span class="val" id="langVal">Auto-detect</span><i class="ic" style="--ic:url(assets/icons/chevron-down.svg)"></i></div>
+                  <div class="menu">
+                    <div class="search"><i class="ic" style="--ic:url(assets/icons/search.svg)"></i><input id="langSearch" placeholder="Search languages…" /></div>
+                    <div class="list" id="langList"></div>
+                    <div class="empty" id="langEmpty" style="display:none">No languages match.</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Subtitle style -->
+            <div class="panel-grp">
+              <div class="grp-h"><i class="ic" style="--ic:url(assets/icons/paint-bucket.svg)"></i><span class="t">Subtitle style</span></div>
+
+              <div class="two">
+                <div class="field">
+                  <label>Font</label>
+                  <div class="sel-wrap">
+                    <select class="sel" id="fontSel">
+                      <option value="var(--ff-sans)">Roboto</option>
+                      <option value="var(--ff-pixel)">Arcade Pixel</option>
+                      <option value="var(--ff-display)">Janeiro</option>
+                      <option value="Arial, sans-serif">Arial</option>
+                      <option value="Georgia, serif">Georgia</option>
+                    </select>
+                    <i class="ic chev" style="--ic:url(assets/icons/chevron-down.svg)"></i>
+                  </div>
+                </div>
+                <div class="field">
+                  <label>Size</label>
+                  <div class="seg" id="sizeSeg">
+                    <button data-v="s">S</button><button data-v="m" class="on">M</button><button data-v="l">L</button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="field">
+                <label>Text color</label>
+                <div class="swatches" id="textSw"></div>
+              </div>
+              <div class="field">
+                <label>Outline / background</label>
+                <div class="swatches" id="outlineSw"></div>
+              </div>
+
+              <div class="field">
+                <label>Position</label>
+                <div class="seg" id="posSeg">
+                  <button data-v="top">Top</button><button data-v="middle">Middle</button><button data-v="bottom" class="on">Bottom</button>
+                </div>
+              </div>
+
+              <div class="field">
+                <label>Max characters per line</label>
+                <div class="range">
+                  <input type="range" id="cplRange" min="20" max="60" step="1" value="42" />
+                  <span class="num" id="cplNum">42 chars</span>
+                </div>
+              </div>
+
+              <div class="field">
+                <div class="toggle-row">
+                  <label style="margin:0">Uppercase captions</label>
+                  <button class="toggle" id="upToggle" aria-pressed="false"></button>
+                </div>
+              </div>
+            </div>
+
+            <div class="cta-bar">
+              <button class="btn btn-primary btn-block btn-lg" id="genBtn"><i class="ic" style="--ic:url(assets/icons/bolt.svg)"></i> Generate subtitles</button>
+              <div class="cta-note"><i class="ic" style="--ic:url(assets/icons/info.svg)"></i> About 1–2 min for a 2:34 clip · uses ~12 credits</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- PROCESSING -->
+      <section data-state="processing">
+        <div class="card proc">
+          <div class="proc-ring"><i class="ic" style="--ic:url(assets/icons/loader.svg)"></i></div>
+          <div class="proc-pct" id="procPct">0%</div>
+          <div class="proc-status" id="procStatus">Starting up…</div>
+          <div class="proc-bar"><i id="procFill"></i></div>
+          <div class="steps" id="steps">
+            <div class="step pending" data-step="0">
+              <div class="marker"><span class="dot"></span></div>
+              <div class="txt"><div class="st">Uploading video</div><div class="sd">Sending product-demo-final.mp4 to Floyo</div></div>
+              <div class="time" data-time>—</div>
+            </div>
+            <div class="step pending" data-step="1">
+              <div class="marker"><span class="dot"></span></div>
+              <div class="txt"><div class="st">Transcribing audio</div><div class="sd">Whisper is listening for speech</div></div>
+              <div class="time" data-time>—</div>
+            </div>
+            <div class="step pending" data-step="2">
+              <div class="marker"><span class="dot"></span></div>
+              <div class="txt"><div class="st">Burning subtitles</div><div class="sd">Rendering styled captions into the frames</div></div>
+              <div class="time" data-time>—</div>
+            </div>
+            <div class="step pending" data-step="3">
+              <div class="marker"><span class="dot"></span></div>
+              <div class="txt"><div class="st">Finalizing</div><div class="sd">Encoding the MP4 and cleaning up</div></div>
+              <div class="time" data-time>—</div>
+            </div>
+          </div>
+          <div class="proc-cancel"><button class="linkbtn" id="cancelBtn">Cancel</button></div>
+        </div>
+      </section>
+
+      <!-- RESULT -->
+      <section data-state="result">
+        <div class="card result-card">
+          <div class="result-head">
+            <span class="pill"><i class="ic" style="--ic:url(assets/icons/check-circle.svg)"></i> Subtitles added</span>
+            <span class="spec" id="resSpec">English · 47 captions · 2:34</span>
+          </div>
+          <div class="player">
+            <div class="grain"></div>
+            <div class="play"><svg width="22" height="24" viewBox="0 0 22 24" fill="none" aria-hidden="true"><path d="M4 2h3v2h3v2h3v2h3v2h3v4h-3v2h-3v2h-3v2H7v2H4V2z" fill="currentColor"/></svg></div>
+            <div class="cap-layer pos-bottom" id="resCapLayer"><span class="cap" id="resCapText">So here’s how the whole thing works.</span></div>
+            <div class="dur">2:34</div>
+          </div>
+          <div class="controls">
+            <div class="play-s"><svg width="13" height="14" viewBox="0 0 22 24" fill="none" aria-hidden="true"><path d="M4 2h3v2h3v2h3v2h3v2h3v4h-3v2h-3v2h-3v2H7v2H4V2z" fill="currentColor"/></svg></div>
+            <div class="scrub"><i></i></div>
+            <span class="tcode">0:52 / 2:34</span>
+            <button class="iconbtn"><i class="ic" style="--ic:url(assets/icons/volume.svg)"></i></button>
+            <button class="iconbtn"><i class="ic" style="--ic:url(assets/icons/expand.svg)"></i></button>
+          </div>
+          <div class="result-actions">
+            <button class="btn btn-primary btn-lg" id="downloadBtn"><i class="ic" style="--ic:url(assets/icons/arrow-down.svg)"></i> Download MP4</button>
+            <button class="btn btn-ghost btn-lg" id="startOverBtn"><i class="ic" style="--ic:url(assets/icons/repeat.svg)"></i> New video</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ERROR -->
+      <section data-state="error">
+        <div class="card errbox">
+          <div class="err-ico"><i class="ic" style="--ic:url(assets/icons/alert.svg)"></i></div>
+          <div class="err-title" id="errTitle">Processing failed</div>
+          <div class="err-msg" id="errMsg">The transcription step didn’t complete. Your file and settings are still here — give it another go.</div>
+          <div class="err-detail" id="errDetail">whisper-auto-subtitles · timeout after 90s</div>
+          <div class="err-actions">
+            <button class="btn btn-primary btn-lg" id="retryBtn"><i class="ic" style="--ic:url(assets/icons/reload.svg)"></i> Retry</button>
+            <button class="btn btn-ghost btn-lg" id="errStartOver"><i class="ic" style="--ic:url(assets/icons/repeat.svg)"></i> Start over</button>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+</div>
+
+<input type="file" id="fileInput" accept="video/mp4,video/quicktime,.mp4,.mov" hidden />
+<script src="auto-subtitles.js"></script>
+</body>
+</html>

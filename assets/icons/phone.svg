@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
+  <path d="M 7.273 1.818 L 7.273 0 L 1.818 0 L 1.818 1.818 L 7.273 1.818 Z" fill="currentColor" fill-rule="nonzero"></path>
+  <path d="M 7.273 5.455 L 9.091 5.455 L 9.091 1.818 L 7.273 1.818 L 7.273 5.455 Z" fill="currentColor" fill-rule="nonzero"></path>
+  <path d="M 1.818 1.818 L 0 1.818 L 0 9.091 L 1.818 9.091 L 1.818 1.818 Z" fill="currentColor" fill-rule="nonzero"></path>
+  <path d="M 7.273 5.455 L 5.455 5.455 L 5.455 7.273 L 7.273 7.273 L 7.273 5.455 Z" fill="currentColor" fill-rule="nonzero"></path>
+  <path d="M 9.091 7.273 L 7.273 7.273 L 7.273 9.091 L 9.091 9.091 L 9.091 7.273 Z" fill="currentColor" fill-rule="nonzero"></path>
+  <path d="M 3.636 9.091 L 1.818 9.091 L 1.818 10.909 L 3.636 10.909 L 3.636 9.091 Z" fill="currentColor" fill-rule="nonzero"></path>
+  <path d="M 10.909 9.091 L 9.091 9.091 L 9.091 10.909 L 10.909 10.909 L 10.909 9.091 Z" fill="currentColor" fill-rule="nonzero"></path>
+  <path d="M 5.455 10.909 L 3.636 10.909 L 3.636 12.727 L 5.455 12.727 L 5.455 10.909 Z" fill="currentColor" fill-rule="nonzero"></path>
+  <path d="M 12.727 10.909 L 10.909 10.909 L 10.909 12.727 L 12.727 12.727 L 12.727 10.909 Z" fill="currentColor" fill-rule="nonzero"></path>
+  <path d="M 18.182 12.727 L 18.182 10.909 L 14.545 10.909 L 14.545 12.727 L 18.182 12.727 Z" fill="currentColor" fill-rule="nonzero"></path>
+  <path d="M 7.273 12.727 L 5.455 12.727 L 5.455 14.545 L 7.273 14.545 L 7.273 12.727 Z" fill="currentColor" fill-rule="nonzero"></path>
+  <path d="M 14.545 12.727 L 12.727 12.727 L 12.727 14.545 L 14.545 14.545 L 14.545 12.727 Z" fill="currentColor" fill-rule="nonzero"></path>
+  <path d="M 18.182 12.727 L 18.182 18.182 L 20 18.182 L 20 12.727 L 18.182 12.727 Z" fill="currentColor" fill-rule="nonzero"></path>
+  <path d="M 9.091 14.545 L 7.273 14.545 L 7.273 16.364 L 9.091 16.364 L 9.091 14.545 Z" fill="currentColor" fill-rule="nonzero"></path>
+  <path d="M 9.091 16.364 L 9.091 18.182 L 12.727 18.182 L 12.727 16.364 L 9.091 16.364 Z" fill="currentColor" fill-rule="nonzero"></path>
+  <path d="M 12.727 18.182 L 12.727 20 L 18.182 20 L 18.182 18.182 L 12.727 18.182 Z" fill="currentColor" fill-rule="nonzero"></path>
+</svg>

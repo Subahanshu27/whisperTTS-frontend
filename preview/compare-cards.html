@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Comparison cards — Floyo DS</title>
+<link rel="stylesheet" href="../colors_and_type.css" />
+<style>
+  html, body { margin: 0; padding: 0; }
+  body { background: var(--cobalt-8); color: white; font-family: var(--ff-sans); padding: 56px 48px; min-height: 100vh; box-sizing: border-box; }
+  .h { display: flex; align-items: baseline; gap: 12px; margin-bottom: 32px; }
+  .h .title { font-family: var(--ff-display); font-size: 28px; line-height: 1; }
+  .h .sub { font-size: 13px; color: var(--cobalt-3); }
+  .pair { display: grid; grid-template-columns: 1fr auto 1fr; gap: 0; align-items: center; max-width: 1080px; }
+  .divider { width: 1px; background: var(--cobalt-7); height: 80%; margin: 0 24px; }
+  .compare-card h3 { font-family: var(--ff-sans); font-weight: 700; font-size: 32px; line-height: 1.2; letter-spacing: -0.02em; margin: 0 0 16px; }
+  .compare-card p  { font-size: 15px; line-height: 1.6; margin: 0 0 12px; opacity: .9; }
+  .compare-card .stamp { font-family: var(--ff-pixel); font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; opacity: .8; margin-top: 16px; }
+  .note { font-size: 13px; color: var(--cobalt-3); max-width: 720px; line-height: 1.6; margin-top: 40px; }
+  code { font-family: var(--ff-mono); color: var(--cobalt-2); }
+</style>
+</head>
+<body>
+  <div class="h">
+    <div class="title">Comparison cards</div>
+    <div class="sub">Without/With pattern — raspberry loss vs mint win · added 26-05</div>
+  </div>
+
+  <div class="pair">
+    <div class="compare-card compare-card-loss">
+      <h3>Without Floyo</h3>
+      <p>Stand up GPU infra. Pin model versions. Manage queueing. Wire 6+ vendor APIs. Maintain workflow logic. Re-do it every time a model improves.</p>
+      <div class="stamp">Weeks of eng time · forever ongoing</div>
+    </div>
+    <div class="divider"></div>
+    <div class="compare-card compare-card-win">
+      <h3>With Floyo</h3>
+      <p>Build the workflow visually. Click "Copy API endpoint." Swap models when better ones drop without changing your code.</p>
+      <div class="stamp">One afternoon · forever upgradable</div>
+    </div>
+  </div>
+
+  <p class="note">
+    Pair two siblings: <code>.compare-card.compare-card-loss</code> (raspberry-tinted, solid border) and <code>.compare-card.compare-card-win</code> (mint-tinted, dashed border with soft mint outer ring). Always loss-then-win, never the reverse.
+  </p>
+</body>
+</html>

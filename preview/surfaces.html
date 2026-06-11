@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Surfaces · Floyo DS</title>
+<link rel="stylesheet" href="../colors_and_type.css" />
+<style>
+  html, body { margin: 0; padding: 0; font-family: var(--ff-sans); }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; min-height: 100vh; }
+  .panel { padding: 56px 48px; }
+  .panel.surface-violet, .panel.surface-cobalt {
+    color: var(--fg);
+  }
+  .badge-row { display: flex; align-items: center; gap: 16px; margin-bottom: 24px; }
+  h2 { font-family: var(--ff-display); font-size: 44px; line-height: 1.15; letter-spacing: -0.02em; margin: 0 0 16px; max-width: 14ch; color: var(--fg); }
+  p.body { color: var(--fg-muted); max-width: 36ch; line-height: 1.6; margin: 0 0 32px; font-size: 15px; }
+  .button {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 12px 20px; border-radius: 999px;
+    font-family: var(--ff-sans); font-weight: 600; font-size: 14px;
+    letter-spacing: 0.1em; text-transform: uppercase; text-decoration: none;
+  }
+  .button-primary { background: var(--lemon-4); color: var(--ube-10); }
+  .meta { font-family: var(--ff-mono); font-size: 11px; color: var(--fg-subtle); margin-top: 48px; }
+  .meta div { margin-bottom: 4px; }
+  .card {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    margin-top: 24px;
+    max-width: 360px;
+  }
+  .card .name { font-weight: 600; font-size: 14px; color: var(--fg); }
+  .card .sub  { color: var(--fg-muted); font-size: 13px; margin-top: 4px; }
+</style>
+</head>
+<body>
+  <div class="grid">
+    <section class="panel surface-violet">
+      <div class="badge-row">
+        <span class="pixel-badge pixel-badge-violet">PRODUCT</span>
+        <span class="kicker kicker-violet">FOR CREATORS</span>
+      </div>
+      <h2>Run any workflow in your browser.</h2>
+      <p class="body">Browse, fork, and run thousands of community ComfyUI workflows — right in your browser. No GPU, no setup.</p>
+      <a class="button button-primary" href="#">Browse workflows</a>
+      <div class="card">
+        <div class="name">Pixel Portrait v3</div>
+        <div class="sub">@strawberry · 12.4k runs</div>
+      </div>
+      <div class="meta">
+        <div>section.surface-violet</div>
+        <div>--bg · #1A0C34</div>
+        <div>--fg-muted · #D5B8FF</div>
+        <div>--accent · ube-5</div>
+      </div>
+    </section>
+    <section class="panel surface-cobalt">
+      <div class="badge-row">
+        <span class="pixel-badge pixel-badge-cobalt">NEW!</span>
+        <span class="kicker kicker-cobalt-bright">API ACCESS IS LIVE!</span>
+      </div>
+      <h2>Every workflow is an API endpoint.</h2>
+      <p class="body">Ship AI visual assets in your app without rolling your own backend. Pick a workflow, copy the endpoint — done.</p>
+      <a class="button button-primary" href="#">Sign up</a>
+      <div class="card">
+        <div class="name">POST /v1/run</div>
+        <div class="sub">Daisy-chain anything · one bill</div>
+      </div>
+      <div class="meta">
+        <div>section.surface-cobalt</div>
+        <div>--bg · #101844</div>
+        <div>--fg-muted · #A4BEFF</div>
+        <div>--accent · cobalt-4</div>
+      </div>
+    </section>
+  </div>
+</body>
+</html>

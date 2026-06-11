@@ -1,0 +1,442 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Floyo · Workflow page · Related carousel</title>
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  html,body{margin:0;padding:0;background:#F1E8FF;font-family:var(--ff-sans);color:var(--fg)}
+  /* page */
+  .page{max-width:1080px;margin:0 auto;padding:24px 24px 80px;display:grid;grid-template-columns:1fr 320px;gap:18px;align-items:flex-start}
+  .col-main{display:flex;flex-direction:column;gap:16px;min-width:0}
+  .col-side{display:flex;flex-direction:column;gap:12px;position:sticky;top:16px}
+
+  /* shared card surface */
+  .surface{background:#fff;border:1px solid var(--ube-2);border-radius:14px}
+
+  /* HEADER PANEL */
+  .header{padding:18px 22px}
+  .title-row{display:flex;justify-content:space-between;align-items:flex-start;gap:18px}
+  .title{font-family:var(--ff-sans);font-weight:700;font-size:22px;color:var(--ube-6);line-height:1.2;margin:0 0 4px}
+  .subtitle{font-size:12px;color:var(--fg-muted);margin-bottom:10px}
+  .tagrow{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}
+  .tag{font-size:11px;color:var(--ube-7);background:var(--ube-1);border:1px solid var(--ube-2);border-radius:6px;padding:3px 9px;font-weight:500}
+  .meta{display:flex;align-items:center;gap:14px;color:var(--fg-muted);font-size:12px}
+  .meta .item{display:inline-flex;align-items:center;gap:5px}
+  .meta img{width:13px;height:13px;image-rendering:pixelated;opacity:.7}
+
+  /* HERO IMAGE */
+  .hero-card{padding:0;overflow:hidden}
+  .hero-img{aspect-ratio:16/10;background:url("https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&w=900") center/cover, linear-gradient(135deg,var(--ube-3),var(--ube-7));position:relative}
+  /* placeholder collage feel */
+  .hero-img{background:linear-gradient(135deg,#C4B4E0 0%,#8358D4 50%,#3B1F52 100%)}
+  .hero-img::after{content:"face-swap example";position:absolute;inset:0;display:grid;place-items:center;color:rgba(255,255,255,.7);font-size:14px;font-style:italic;letter-spacing:.04em}
+  .thumbstrip{display:flex;align-items:center;gap:8px;padding:10px 12px;border-top:1px solid var(--ube-1)}
+  .thumbstrip .nav{width:36px;height:48px;background:var(--ube-1);border:1px solid var(--ube-2);border-radius:6px;display:grid;place-items:center;cursor:pointer}
+  .thumbstrip .thumb{width:60px;height:48px;border-radius:6px;background:var(--ube-2);border:2px solid transparent;cursor:pointer}
+  .thumbstrip .thumb.active{border-color:var(--lemon-4);background:var(--lemon-4)}
+  .thumbstrip .thumb.t2{background:linear-gradient(135deg,#AF7FF4,#3B1F52)}
+  .thumbstrip .grow{flex:1}
+  .thumbstrip img.chev{width:14px;height:14px;image-rendering:pixelated;opacity:.6}
+
+  /* OVERVIEW */
+  .overview{padding:20px 24px}
+  .overview h2{font-family:var(--ff-sans);font-weight:700;font-size:18px;color:var(--fg);margin:0 0 10px}
+  .overview p{font-size:13px;line-height:1.6;color:var(--fg);margin:0 0 12px}
+  .overview h3{font-family:var(--ff-sans);font-weight:700;font-size:14px;color:var(--fg);margin:16px 0 8px}
+  .overview ol{padding-left:18px;margin:0;font-size:13px;line-height:1.7;color:var(--fg)}
+  .read-more{display:inline-flex;align-items:center;gap:6px;color:var(--ube-6);font-size:12px;font-weight:600;text-decoration:underline;margin-top:6px;cursor:pointer}
+  .read-more::before{content:"▸";font-size:10px}
+
+  /* COMMENT FORM */
+  .comment{padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+  .comment-row{display:flex;align-items:center;gap:10px}
+  .avatar{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,var(--lemon-3),var(--tangerine-4));display:grid;place-items:center;color:var(--ube-10);font-weight:700;font-size:12px;flex-shrink:0}
+  .input-pill{flex:1;display:flex;align-items:center;gap:8px;background:var(--ube-1);border:1px solid var(--ube-2);border-radius:999px;padding:8px 14px}
+  .input-pill input{flex:1;border:none;background:transparent;outline:none;font-size:13px;font-family:inherit;color:var(--fg)}
+  .input-pill input::placeholder{color:var(--fg-subtle)}
+  .input-pill .send{width:24px;height:24px;border-radius:999px;background:var(--ube-5);display:grid;place-items:center;cursor:pointer}
+  .input-pill .send img{width:12px;height:12px;image-rendering:pixelated;filter:invert(100%)}
+  .sortpill{display:inline-flex;align-items:center;gap:5px;font-size:11px;color:var(--ube-7);border:1px solid var(--ube-2);background:#fff;border-radius:999px;padding:3px 10px;align-self:flex-start;font-weight:500}
+
+  /* ─────────── RELATED WORKFLOWS CAROUSEL ─────────── */
+  .related{padding:22px 24px}
+  .related-head{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:14px;gap:14px}
+  .related-h{display:flex;flex-direction:column;gap:2px}
+  .related-h .kicker{font-size:10px;font-weight:700;letter-spacing:.10em;text-transform:uppercase;color:var(--ube-5)}
+  .related-h h2{font-family:var(--ff-sans);font-weight:700;font-size:20px;color:var(--ube-7);margin:0;line-height:1.15}
+  .related-h .sub{font-size:12px;color:var(--fg-muted);margin-top:3px}
+  .related-controls{display:flex;align-items:center;gap:8px}
+  .arrow-btn{width:36px;height:36px;border-radius:999px;background:#fff;border:1px solid var(--ube-3);display:grid;place-items:center;cursor:pointer;transition:background var(--dur) var(--ease-out),border-color var(--dur) var(--ease-out)}
+  .arrow-btn:hover{background:var(--ube-1);border-color:var(--ube-5)}
+  .arrow-btn[disabled]{opacity:.4;cursor:not-allowed}
+  .arrow-btn img{width:14px;height:14px;image-rendering:pixelated}
+  #prev img{transform:rotate(90deg)}
+  #next img{transform:rotate(-90deg)}
+
+  .carousel{position:relative;overflow:hidden;margin:0 -2px;min-width:0}
+  .track{display:flex;gap:14px;padding:2px 2px 4px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;cursor:grab;user-select:none}
+  .track::-webkit-scrollbar{display:none}
+  .track.dragging{cursor:grabbing;scroll-snap-type:none}
+
+  .wfcard{flex:0 0 calc((100% - 14px*3) / 4);scroll-snap-align:start;background:#fff;border:1px solid var(--ube-2);border-radius:12px;overflow:hidden;display:flex;flex-direction:column;transition:transform var(--dur) var(--ease-out),box-shadow var(--dur) var(--ease-out),border-color var(--dur) var(--ease-out);text-decoration:none;color:inherit}
+  .wfcard:hover{transform:translateY(-2px);box-shadow:var(--shadow-violet);border-color:var(--ube-4)}
+  .wfcard .thumb{aspect-ratio:16/10;position:relative;background:#21152A}
+  .wfcard .thumb img.bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+  .wfcard .thumb .grad{position:absolute;inset:0;background:linear-gradient(180deg,transparent 60%,rgba(26,12,52,.55) 100%)}
+  .wfcard .thumb .badge{position:absolute;top:8px;left:8px;background:rgba(26,12,52,.78);color:#fff;font-size:9px;font-weight:600;letter-spacing:.06em;padding:3px 7px;border-radius:4px;text-transform:uppercase;display:inline-flex;align-items:center;gap:5px}
+  .wfcard .thumb .badge.model{background:var(--lemon-4);color:var(--ube-10)}
+  .wfcard .body{padding:11px 12px 12px;display:flex;flex-direction:column;gap:7px}
+  .wfcard .name{font-size:13px;font-weight:600;color:var(--fg);line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:34px}
+  .wfcard .author{display:flex;align-items:center;gap:7px;font-size:11px;color:var(--fg-muted)}
+  .wfcard .author .av{width:18px;height:18px;border-radius:50%;flex-shrink:0}
+  .wfcard .author .name-a{font-weight:500;color:var(--fg)}
+
+  /* thumbnail flavors (gradient placeholders for now) */
+  .t-faces{background:linear-gradient(135deg,#FFBC92 0%,#EA2B6B 60%,#3B1F52 100%)}
+  .t-portrait{background:linear-gradient(135deg,#9BD1FF 0%,#8358D4 100%)}
+  .t-anime{background:linear-gradient(135deg,#FF9BC4 0%,#AF7FF4 60%,#21152A 100%)}
+  .t-product{background:linear-gradient(135deg,#A6FFD6 0%,#0D6BBE 100%)}
+  .t-mask{background:linear-gradient(135deg,#FFEB28 0%,#FF934F 60%,#AD0347 100%)}
+  .t-style{background:linear-gradient(135deg,#D5B8FF 0%,#3B1F52 100%)}
+  .t-restore{background:linear-gradient(135deg,#FFD7BE 0%,#DD5C28 100%)}
+  .t-cinema{background:linear-gradient(135deg,#21152A 0%,#8358D4 100%)}
+
+  .progress{margin-top:14px;height:3px;background:var(--ube-1);border-radius:2px;overflow:hidden;position:relative}
+  .progress .bar{position:absolute;top:0;left:0;height:100%;width:33%;background:var(--ube-5);border-radius:2px;transition:left var(--dur-slow) var(--ease-out),width var(--dur-slow) var(--ease-out)}
+
+  /* ─── SIDEBAR ─── */
+  .runbox{background:var(--lemon-4);border-radius:10px;padding:6px 10px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;font-weight:700;font-size:12px;letter-spacing:.06em;color:var(--ube-10);text-transform:uppercase}
+  .runbox::after{content:"▶";font-size:9px}
+  .side-actions{display:flex;flex-direction:column;gap:6px}
+  .side-row{background:#fff;border:1px solid var(--ube-2);border-radius:10px;padding:9px 12px;display:flex;align-items:center;justify-content:space-between;font-size:12px;color:var(--ube-7);font-weight:500;cursor:pointer}
+  .side-row .lico{width:14px;height:14px;image-rendering:pixelated}
+  .side-row.purp{background:var(--ube-3);color:var(--ube-10)}
+  .side-row .right{display:flex;align-items:center;gap:6px}
+  .info-pill{background:var(--ube-2);border:1px solid var(--ube-3);border-radius:999px;padding:7px 12px;font-size:11px;color:var(--ube-8);display:flex;align-items:center;gap:6px;justify-content:center}
+  .info-pill img{width:11px;height:11px;image-rendering:pixelated;opacity:.6}
+
+  .author-card{padding:10px 12px;display:flex;align-items:center;gap:8px;justify-content:space-between}
+  .author-l{display:flex;align-items:center;gap:8px}
+  .author-l .av{width:22px;height:22px;border-radius:50%;background:var(--lemon-4);display:grid;place-items:center;font-size:11px;font-weight:700;color:var(--ube-10)}
+  .author-l .n{font-size:12px;font-weight:500;color:var(--ube-7)}
+  .author-card .ed{width:28px;height:28px;border-radius:6px;background:var(--lemon-4);display:grid;place-items:center;cursor:pointer}
+  .author-card .ed img{width:12px;height:12px;image-rendering:pixelated;filter:brightness(0)}
+
+  .nodes-box{padding:0;overflow:hidden}
+  .nodes-h{display:flex;align-items:center;gap:6px;padding:11px 12px;border-bottom:1px solid var(--ube-1);background:#fff;font-size:12px;font-weight:600;color:var(--ube-7)}
+  .nodes-h .dot{width:10px;height:10px;border-radius:50%;background:var(--lemon-4)}
+  .nodes-list{font-size:11px;color:var(--fg)}
+  .node-grp{border-bottom:1px solid var(--ube-1)}
+  .node-grp:last-child{border-bottom:none}
+  .node-grp .nh{padding:9px 12px;display:flex;align-items:center;justify-content:space-between;cursor:pointer}
+  .node-grp .nh .l{display:flex;align-items:center;gap:6px}
+  .node-grp .nh .nm{font-size:12px;font-weight:500;color:var(--fg)}
+  .node-grp .nh .ic{width:11px;height:11px;image-rendering:pixelated;opacity:.5}
+  .node-grp .body{padding:0 12px 9px 26px;display:flex;flex-direction:column;gap:2px;font-size:10.5px;color:var(--fg-muted);line-height:1.5;font-family:var(--ff-mono)}
+  .node-grp.collapsed .body{display:none}
+</style>
+</head>
+<body class="floyo-base">
+
+<div class="page">
+
+  <!-- ===================== MAIN COLUMN ===================== -->
+  <div class="col-main">
+
+    <!-- Header card -->
+    <section class="surface header">
+      <div class="title-row">
+        <div>
+          <h1 class="title">Qwen Image Edit 2509 Face Swap and Inpainting</h1>
+          <div class="subtitle">Face Swap and Inpainting</div>
+          <div class="tagrow">
+            <span class="tag">Face Swap</span>
+            <span class="tag">ImageToImage</span>
+            <span class="tag">Inpainting</span>
+            <span class="tag">Qwen</span>
+            <span class="tag">Qwen Image Edit 2509</span>
+          </div>
+          <div class="meta">
+            <span class="item"><img src="../assets/icons/heart.svg" alt="">12</span>
+            <span class="item"><img src="../assets/icons/eye.svg" alt="">3.9k</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Hero image -->
+    <section class="surface hero-card">
+      <div class="hero-img"></div>
+      <div class="thumbstrip">
+        <div class="nav"><img class="chev" src="../assets/icons/chevron-left.svg" alt=""></div>
+        <div class="thumb active"></div>
+        <div class="thumb t2"></div>
+        <div class="grow"></div>
+        <div class="nav"><img class="chev" src="../assets/icons/chevron-right.svg" alt=""></div>
+      </div>
+    </section>
+
+    <!-- Overview -->
+    <section class="surface overview">
+      <h2>Overview</h2>
+      <p>Swapping faces in images has come a long way from manual cut-and-paste edits — the latest AI-powered tools now make it possible to achieve unbelievably realistic results, right from your desktop. With Qwen Image Edit 2509 and its precision inpainting system, anyone can replace faces or even entire heads in photographs, group shots, or creative compositions with just a few guided steps. This process is popular for memes, social media, and creative digital art, but it's also used in marketing, product shoots, and professional photo editing where maintaining a natural look and fine detail truly matters.</p>
+      <h3>For best results:</h3>
+      <ol>
+        <li>Upload images.</li>
+        <li>In the first image mask only face and hair. The accuracy of the selection is important!</li>
+        <li>In the reference image, mask only face and hair too. You can use big brush. The accuracy of the selection is NOT important. You do that for proper crop operation.</li>
+        <li>Generate image.</li>
+        <li>Play with color correction (Control color match strength).</li>
+      </ol>
+      <a class="read-more">Read more</a>
+    </section>
+
+    <!-- Comment box -->
+    <section class="surface comment">
+      <div class="comment-row">
+        <div class="avatar">F</div>
+        <div class="input-pill">
+          <input placeholder="Add a comment">
+          <div class="send"><img src="../assets/icons/arrow-down.svg" alt="" style="transform:rotate(-90deg)"></div>
+        </div>
+      </div>
+      <div class="sortpill">Sorted by: Created <img src="../assets/icons/chevron-down.svg" style="width:8px;height:8px;image-rendering:pixelated"></div>
+    </section>
+
+    <!-- ─────────── RELATED WORKFLOWS CAROUSEL ─────────── -->
+    <section class="surface related" data-section="related-workflows">
+      <header class="related-head">
+        <div class="related-h">
+          <div class="kicker">RELATED WORKFLOWS</div>
+          <h2>More like this</h2>
+          <div class="sub">Same model & shared tags · 12 results</div>
+        </div>
+        <div class="related-controls">
+          <button class="arrow-btn" id="prev" aria-label="Previous"><img src="../assets/icons/chevron-left.svg" alt=""></button>
+          <button class="arrow-btn" id="next" aria-label="Next"><img src="../assets/icons/chevron-right.svg" alt=""></button>
+        </div>
+      </header>
+
+      <div class="carousel">
+        <div class="track" id="track">
+
+          <a class="wfcard" href="#">
+            <div class="thumb t-faces"><span class="badge model">QWEN 2509</span><div class="grad"></div></div>
+            <div class="body">
+              <div class="name">Qwen Multi-Face Swap with Reference</div>
+              <div class="author"><span class="av" style="background:linear-gradient(135deg,var(--mint-3),var(--blueberry-5))"></span><span class="name-a">@miya</span></div>
+            </div>
+          </a>
+
+          <a class="wfcard" href="#">
+            <div class="thumb t-portrait"><span class="badge model">QWEN 2509</span><div class="grad"></div></div>
+            <div class="body">
+              <div class="name">Portrait Inpainting + Skin Retouch</div>
+              <div class="author"><span class="av" style="background:linear-gradient(135deg,var(--lemon-3),var(--tangerine-4))"></span><span class="name-a">@kez_studio</span></div>
+            </div>
+          </a>
+
+          <a class="wfcard" href="#">
+            <div class="thumb t-anime"><span class="badge model">QWEN 2509</span><div class="grad"></div></div>
+            <div class="body">
+              <div class="name">Anime Face Transfer (Qwen Edit)</div>
+              <div class="author"><span class="av" style="background:linear-gradient(135deg,var(--raspberry-3),var(--ube-5))"></span><span class="name-a">@nori.draws</span></div>
+            </div>
+          </a>
+
+          <a class="wfcard" href="#">
+            <div class="thumb t-product"><span class="badge">FACE SWAP · INPAINTING</span><div class="grad"></div></div>
+            <div class="body">
+              <div class="name">Group Photo Face Replacer (4-up)</div>
+              <div class="author"><span class="av" style="background:linear-gradient(135deg,var(--mint-3),var(--mint-7))"></span><span class="name-a">@doc</span></div>
+            </div>
+          </a>
+
+          <a class="wfcard" href="#">
+            <div class="thumb t-mask"><span class="badge">INPAINTING</span><div class="grad"></div></div>
+            <div class="body">
+              <div class="name">Precision Mask + Color Match</div>
+              <div class="author"><span class="av" style="background:linear-gradient(135deg,var(--tangerine-3),var(--strawberry-5))"></span><span class="name-a">@rio</span></div>
+            </div>
+          </a>
+
+          <a class="wfcard" href="#">
+            <div class="thumb t-style"><span class="badge model">QWEN 2509</span><div class="grad"></div></div>
+            <div class="body">
+              <div class="name">Cinematic Headshot Cleanup</div>
+              <div class="author"><span class="av" style="background:linear-gradient(135deg,var(--ube-3),var(--ube-6))"></span><span class="name-a">@ari.dp</span></div>
+            </div>
+          </a>
+
+          <a class="wfcard" href="#">
+            <div class="thumb t-restore"><span class="badge">FACE SWAP</span><div class="grad"></div></div>
+            <div class="body">
+              <div class="name">Old Photo Face Restoration</div>
+              <div class="author"><span class="av" style="background:linear-gradient(135deg,var(--lemon-4),var(--tangerine-5))"></span><span class="name-a">@vintage_lab</span></div>
+            </div>
+          </a>
+
+          <a class="wfcard" href="#">
+            <div class="thumb t-cinema"><span class="badge model">QWEN 2509</span><div class="grad"></div></div>
+            <div class="body">
+              <div class="name">Editorial Face Composite</div>
+              <div class="author"><span class="av" style="background:linear-gradient(135deg,var(--blueberry-3),var(--ube-7))"></span><span class="name-a">@pixelpress</span></div>
+            </div>
+          </a>
+
+          <a class="wfcard" href="#">
+            <div class="thumb t-faces"><span class="badge">FACE SWAP</span><div class="grad"></div></div>
+            <div class="body">
+              <div class="name">Meme Face Swap (Fast Preset)</div>
+              <div class="author"><span class="av" style="background:linear-gradient(135deg,var(--raspberry-3),var(--raspberry-6))"></span><span class="name-a">@memelord</span></div>
+            </div>
+          </a>
+
+          <a class="wfcard" href="#">
+            <div class="thumb t-portrait"><span class="badge model">QWEN 2509</span><div class="grad"></div></div>
+            <div class="body">
+              <div class="name">Wedding Group Retouch (Inpaint)</div>
+              <div class="author"><span class="av" style="background:linear-gradient(135deg,var(--mint-2),var(--blueberry-6))"></span><span class="name-a">@studio.maru</span></div>
+            </div>
+          </a>
+
+          <a class="wfcard" href="#">
+            <div class="thumb t-mask"><span class="badge">INPAINTING</span><div class="grad"></div></div>
+            <div class="body">
+              <div class="name">Background Blur + Subject Inpaint</div>
+              <div class="author"><span class="av" style="background:linear-gradient(135deg,var(--lemon-3),var(--mint-5))"></span><span class="name-a">@flowlab</span></div>
+            </div>
+          </a>
+
+          <a class="wfcard" href="#">
+            <div class="thumb t-anime"><span class="badge model">QWEN 2509</span><div class="grad"></div></div>
+            <div class="body">
+              <div class="name">Stylized Avatar Maker</div>
+              <div class="author"><span class="av" style="background:linear-gradient(135deg,var(--ube-3),var(--raspberry-5))"></span><span class="name-a">@anika</span></div>
+            </div>
+          </a>
+
+        </div>
+      </div>
+
+      <div class="progress"><div class="bar" id="bar"></div></div>
+    </section>
+
+  </div>
+
+  <!-- ===================== SIDEBAR ===================== -->
+  <aside class="col-side">
+    <div class="runbox">OPEN WORKFLOW</div>
+    <div class="side-actions">
+      <div class="side-row purp"><span>↗ Share Workflow</span><span class="right"><img class="lico" src="../assets/icons/edit.svg" alt=""><img class="lico" src="../assets/icons/heart.svg" alt=""></span></div>
+      <div class="info-pill"><img src="../assets/icons/bolt.svg" alt="">Generates in about 1 min 27 secs</div>
+    </div>
+
+    <div class="surface author-card">
+      <div class="author-l">
+        <div class="av">F</div>
+        <div class="n">floyoofficial</div>
+      </div>
+      <div class="ed"><img src="../assets/icons/edit.svg" alt=""></div>
+    </div>
+
+    <div class="surface nodes-box">
+      <div class="nodes-h"><span class="dot"></span>Nodes &amp; Models</div>
+      <div class="nodes-list">
+        <div class="node-grp">
+          <div class="nh"><div class="l"><img class="ic" src="../assets/icons/box-pixel.svg" alt=""><span class="nm">ComfyUI Official</span></div><img class="ic" src="../assets/icons/chevron-down.svg" alt=""></div>
+          <div class="body">
+            <span>PrimitiveNode</span><span>PrimitiveInt</span><span>VAELoader</span><span>LoadImage</span><span>UNETLoader</span><span>qwen_image_edit_2509…</span><span>CLIPLoader</span><span>PreviewImage</span>
+          </div>
+        </div>
+        <div class="node-grp collapsed">
+          <div class="nh"><div class="l"><img class="ic" src="../assets/icons/box-pixel.svg" alt=""><span class="nm">ComfyUI_ordong</span></div><img class="ic" src="../assets/icons/chevron-right.svg" alt=""></div>
+          <div class="body"><span>INTConstant</span></div>
+        </div>
+        <div class="node-grp collapsed">
+          <div class="nh"><div class="l"><img class="ic" src="../assets/icons/box-pixel.svg" alt=""><span class="nm">ComfyUI-KJNodes</span></div><img class="ic" src="../assets/icons/chevron-right.svg" alt=""></div>
+          <div class="body"><span>INTConstant</span><span>ImageConcanate</span><span>ColorMatch</span></div>
+        </div>
+        <div class="node-grp collapsed">
+          <div class="nh"><div class="l"><img class="ic" src="../assets/icons/box-pixel.svg" alt=""><span class="nm">ComfyUI_Swwam</span></div><img class="ic" src="../assets/icons/chevron-right.svg" alt=""></div>
+          <div class="body"><span>ImageConcanate</span></div>
+        </div>
+        <div class="node-grp collapsed">
+          <div class="nh"><div class="l"><img class="ic" src="../assets/icons/box-pixel.svg" alt=""><span class="nm">ComfyUI-Inpaint-CropAndStitch</span></div><img class="ic" src="../assets/icons/chevron-right.svg" alt=""></div>
+          <div class="body"><span>InpaintCropImproved</span></div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+</div>
+
+<script>
+  // ── Carousel ─────────────────────────────────────────────────
+  const track = document.getElementById('track');
+  const prev = document.getElementById('prev');
+  const next = document.getElementById('next');
+  const bar = document.getElementById('bar');
+
+  function cardStep(){
+    // step = card width + gap
+    const card = track.querySelector('.wfcard');
+    if(!card) return 280;
+    const styles = getComputedStyle(track);
+    const gap = parseFloat(styles.columnGap || styles.gap) || 14;
+    return card.getBoundingClientRect().width + gap;
+  }
+
+  function updateProgress(){
+    const max = track.scrollWidth - track.clientWidth;
+    const pct = max > 0 ? track.scrollLeft / max : 0;
+    const visible = track.clientWidth / track.scrollWidth;
+    bar.style.width = (Math.max(visible, 0.08) * 100).toFixed(2) + '%';
+    bar.style.left = ((pct * (1 - visible)) * 100).toFixed(2) + '%';
+    prev.disabled = track.scrollLeft <= 1;
+    next.disabled = track.scrollLeft >= max - 1;
+  }
+
+  prev.addEventListener('click', () => {
+    track.scrollBy({ left: -cardStep() * 2, behavior: 'smooth' });
+  });
+  next.addEventListener('click', () => {
+    track.scrollBy({ left:  cardStep() * 2, behavior: 'smooth' });
+  });
+  track.addEventListener('scroll', updateProgress);
+  window.addEventListener('resize', updateProgress);
+
+  // ── Drag-scroll ──────────────────────────────────────────────
+  let isDown = false, startX = 0, startScroll = 0, moved = 0;
+  track.addEventListener('pointerdown', e => {
+    isDown = true; moved = 0;
+    startX = e.clientX;
+    startScroll = track.scrollLeft;
+    track.classList.add('dragging');
+    track.setPointerCapture(e.pointerId);
+  });
+  track.addEventListener('pointermove', e => {
+    if(!isDown) return;
+    const dx = e.clientX - startX;
+    moved = Math.abs(dx);
+    track.scrollLeft = startScroll - dx;
+  });
+  function endDrag(e){
+    if(!isDown) return;
+    isDown = false;
+    track.classList.remove('dragging');
+    // suppress click after a real drag
+    if(moved > 6){
+      const blocker = ev => { ev.preventDefault(); ev.stopPropagation(); track.removeEventListener('click', blocker, true); };
+      track.addEventListener('click', blocker, true);
+    }
+  }
+  track.addEventListener('pointerup', endDrag);
+  track.addEventListener('pointercancel', endDrag);
+  track.addEventListener('pointerleave', endDrag);
+
+  updateProgress();
+</script>
+</body>
+</html>

@@ -1,0 +1,17 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Shadows & Elevation</title>
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  html,body{margin:0;padding:0;background:#fff}
+  body{font-family:var(--ff-sans);padding:24px;display:grid;grid-template-columns:repeat(4,1fr);gap:18px;background:var(--bg-subtle)}
+  .item{display:flex;flex-direction:column;align-items:center;gap:10px}
+  .card{width:120px;height:80px;background:#fff;border-radius:12px;border:1px solid var(--border)}
+  .lbl{font-size:11px;font-weight:600;color:var(--fg)}
+  .meta{font-family:var(--ff-mono);font-size:10px;color:var(--fg-muted);text-align:center}
+</style></head>
+<body class="floyo-base">
+  <div class="item"><div class="card"></div><div class="lbl">none</div><div class="meta">resting</div></div>
+  <div class="item"><div class="card" style="box-shadow:var(--shadow-sm)"></div><div class="lbl">sm</div><div class="meta">borders / chips</div></div>
+  <div class="item"><div class="card" style="box-shadow:var(--shadow-md)"></div><div class="lbl">md</div><div class="meta">menus / dropdowns</div></div>
+  <div class="item"><div class="card" style="box-shadow:var(--shadow-violet)"></div><div class="lbl">violet</div><div class="meta">card hover</div></div>
+</body></html>

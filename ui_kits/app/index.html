@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Floyo · Workflow runner</title>
+<link rel="stylesheet" href="../../colors_and_type.css">
+<style>
+  html,body{margin:0;padding:0;height:100%;background:var(--bg-subtle);font-family:var(--ff-sans);color:var(--fg)}
+  .app{display:grid;grid-template-columns:64px 280px 1fr;height:100vh}
+  /* Rail */
+  .rail{background:var(--ube-10);display:flex;flex-direction:column;align-items:center;padding:14px 0;gap:10px}
+  .rail .logo{width:30px;height:30px;background:var(--ube-5);border-radius:8px;display:grid;place-items:center;color:#fff;font-family:var(--ff-display);font-size:20px;line-height:1}
+  .rail .ico{width:40px;height:40px;border-radius:8px;display:grid;place-items:center;cursor:pointer;color:var(--ube-3)}
+  .rail .ico:hover{background:var(--ube-8)}
+  .rail .ico.active{background:var(--ube-7);color:#fff}
+  .rail img{width:22px;height:22px;image-rendering:pixelated;filter:invert(78%) sepia(11%) saturate(720%) hue-rotate(231deg) brightness(105%)}
+  .rail .ico.active img{filter:invert(100%)}
+  .rail .grow{flex:1}
+  .rail .avatar{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--mint-3),var(--blueberry-5));border:2px solid var(--ube-7)}
+  /* Sidebar */
+  .side{background:#fff;border-right:1px solid var(--border);display:flex;flex-direction:column}
+  .side-h{padding:18px 18px 10px;display:flex;flex-direction:column;gap:14px}
+  .side-h .title{font-family:var(--ff-display);font-size:30px;color:var(--ube-7);line-height:1}
+  .search{display:flex;align-items:center;gap:8px;background:var(--ube-1);border:1px solid var(--ube-2);border-radius:8px;padding:8px 10px}
+  .search img{width:16px;height:16px;image-rendering:pixelated;opacity:.6}
+  .search input{border:none;background:transparent;outline:none;font-size:13px;flex:1;font-family:inherit;color:var(--fg)}
+  .side .group{padding:6px 10px}
+  .side .group .label{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--fg-subtle);padding:8px 10px}
+  .navrow{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:8px;font-size:13px;color:var(--fg);cursor:pointer}
+  .navrow:hover{background:var(--ube-1)}
+  .navrow.active{background:var(--ube-1);color:var(--ube-7);font-weight:600}
+  .navrow img{width:18px;height:18px;image-rendering:pixelated}
+  .navrow .count{margin-left:auto;font-family:var(--ff-mono);font-size:10px;color:var(--fg-muted)}
+  /* Main */
+  .main{overflow:auto;padding:24px 32px 80px}
+  .topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+  .crumb{display:flex;align-items:center;gap:8px;color:var(--fg-muted);font-size:12px}
+  .crumb img{width:12px;height:12px;image-rendering:pixelated;opacity:.5}
+  .actions{display:flex;gap:10px}
+  .btn{font-family:var(--ff-sans);font-weight:600;letter-spacing:.10em;text-transform:uppercase;border-radius:999px;border:none;cursor:pointer;padding:11px 18px;font-size:11px;transition:background var(--dur) var(--ease-out);display:inline-flex;align-items:center;gap:8px}
+  .btn-primary{background:var(--ube-5);color:#fff}
+  .btn-primary:hover{background:var(--ube-6)}
+  .btn-ghost{background:transparent;color:var(--ube-7);border:1px solid var(--ube-3)}
+  .btn-ghost:hover{background:var(--ube-1)}
+  .btn img{width:14px;height:14px;image-rendering:pixelated;filter:invert(100%)}
+  .btn-ghost img{filter:none}
+  .hero{background:#fff;border:1px solid var(--border);border-radius:16px;padding:24px 28px;display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;position:relative;overflow:hidden}
+  .hero .h-title{font-family:var(--ff-sans);font-weight:800;font-size:34px;color:var(--ube-7);line-height:1.1;letter-spacing:-.02em;margin:0 0 10px}
+  .hero .h-sub{font-size:14px;color:var(--fg-muted);max-width:520px}
+  .hero .h-stat{display:flex;gap:24px;margin-top:14px}
+  .hero .stat{display:flex;flex-direction:column}
+  .hero .stat .v{font-family:var(--ff-display);font-size:32px;color:var(--ube-5);line-height:1}
+  .hero .stat .k{font-size:11px;color:var(--fg-muted);letter-spacing:.06em;text-transform:uppercase;margin-top:4px}
+  .hero .pixel-deco{font-family:var(--ff-pixel);font-size:96px;color:var(--ube-2);line-height:1;letter-spacing:.05em}
+
+  .filterbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+  .tabs{display:flex;gap:4px}
+  .tab{font-size:12px;padding:8px 14px;border-radius:999px;cursor:pointer;color:var(--fg-muted);font-weight:600}
+  .tab.active{background:var(--ube-7);color:#fff}
+  .tools{display:flex;gap:8px;align-items:center}
+  .chip{background:var(--ube-1);color:var(--ube-7);border-radius:999px;padding:5px 12px;font-size:11px;font-weight:500;cursor:pointer}
+  .chip.on{background:var(--ube-5);color:#fff}
+
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+  .card{background:#fff;border:1px solid var(--border);border-radius:12px;overflow:hidden;display:flex;flex-direction:column;transition:box-shadow var(--dur) var(--ease-out),transform var(--dur) var(--ease-out);cursor:pointer}
+  .card:hover{box-shadow:var(--shadow-violet);transform:translateY(-2px)}
+  .card .thumb{aspect-ratio:16/10;position:relative;background:#000}
+  .thumb.t1{background:linear-gradient(135deg,#FF9BC4 0%,#AF7FF4 60%,#3B1F52 100%)}
+  .thumb.t2{background:linear-gradient(135deg,#56FFB1 0%,#0D6BBE 100%)}
+  .thumb.t3{background:linear-gradient(135deg,#FFEB28 0%,#FF934F 70%,#AD0347 100%)}
+  .thumb.t4{background:linear-gradient(135deg,#D5B8FF 0%,#7AC0FF 100%)}
+  .thumb.t5{background:linear-gradient(135deg,#FFBC92 0%,#EA2B6B 100%)}
+  .thumb.t6{background:linear-gradient(135deg,#21152A 0%,#8358D4 100%)}
+  .thumb .v-badge{position:absolute;top:10px;left:10px;background:var(--ube-7);color:#fff;font-size:10px;font-weight:700;letter-spacing:.06em;padding:4px 8px;border-radius:4px;display:inline-flex;align-items:center;gap:5px}
+  .thumb .v-badge .px{width:8px;height:8px;background:var(--lemon-4);border-radius:1px}
+  .thumb .runs{position:absolute;bottom:10px;right:10px;background:rgba(26,12,52,.7);color:#fff;font-family:var(--ff-mono);font-size:10px;padding:3px 7px;border-radius:4px;display:flex;align-items:center;gap:5px}
+  .thumb .runs img{width:10px;height:10px;image-rendering:pixelated;filter:invert(100%)}
+  .card .meta{padding:12px 14px;display:flex;flex-direction:column;gap:8px}
+  .card .row{display:flex;align-items:center;gap:8px}
+  .card .name{font-size:14px;font-weight:600;color:var(--fg)}
+  .card .creator{font-size:11px;color:var(--fg-muted);display:flex;align-items:center;gap:6px}
+  .card .avatar{width:14px;height:14px;border-radius:50%;background:var(--mint-3)}
+  .card .tags{display:flex;gap:5px;flex-wrap:wrap;margin-top:2px}
+  .card .tag{font-size:10px;color:var(--ube-7);background:var(--ube-1);padding:2px 7px;border-radius:999px}
+</style>
+</head>
+<body class="floyo-base">
+<div class="app">
+
+  <!-- LEFT RAIL -->
+  <nav class="rail">
+    <div class="logo">f.</div>
+    <div class="ico active" title="Home"><img src="../../assets/icons/box-pixel.svg" alt=""></div>
+    <div class="ico" title="Discover"><img src="../../assets/icons/search.svg" alt=""></div>
+    <div class="ico" title="Models"><img src="../../assets/icons/model-library.svg" alt=""></div>
+    <div class="ico" title="My runs"><img src="../../assets/icons/repeat.svg" alt=""></div>
+    <div class="ico" title="Library"><img src="../../assets/icons/heart.svg" alt=""></div>
+    <div class="ico" title="Docs"><img src="../../assets/icons/documentation.svg" alt=""></div>
+    <div class="grow"></div>
+    <div class="ico" title="Settings"><img src="../../assets/icons/command.svg" alt=""></div>
+    <div class="avatar"></div>
+  </nav>
+
+  <!-- SIDEBAR -->
+  <aside class="side">
+    <div class="side-h">
+      <div class="title">Floyo!</div>
+      <div class="search">
+        <img src="../../assets/icons/search.svg" alt="">
+        <input placeholder="Search workflows, models…">
+      </div>
+    </div>
+    <div class="group">
+      <div class="label">Discover</div>
+      <div class="navrow active"><img src="../../assets/icons/bolt.svg" alt="">Trending<span class="count">·new</span></div>
+      <div class="navrow"><img src="../../assets/icons/star.svg" alt="">Featured</div>
+      <div class="navrow"><img src="../../assets/icons/check-circle.svg" alt="">Verified<span class="count">128</span></div>
+      <div class="navrow"><img src="../../assets/icons/chart-up.svg" alt="">Top this week</div>
+    </div>
+    <div class="group">
+      <div class="label">Categories</div>
+      <div class="navrow"><img src="../../assets/icons/image.svg" alt="">Image</div>
+      <div class="navrow"><img src="../../assets/icons/video-add.svg" alt="">Video</div>
+      <div class="navrow"><img src="../../assets/icons/fashion.svg" alt="">Style transfer</div>
+      <div class="navrow"><img src="../../assets/icons/web-design.svg" alt="">Upscale &amp; restore</div>
+      <div class="navrow"><img src="../../assets/icons/movie-production.svg" alt="">Animation</div>
+    </div>
+    <div class="group">
+      <div class="label">Yours</div>
+      <div class="navrow"><img src="../../assets/icons/notes.svg" alt="">Drafts<span class="count">3</span></div>
+      <div class="navrow"><img src="../../assets/icons/heart.svg" alt="">Saved<span class="count">21</span></div>
+      <div class="navrow"><img src="../../assets/icons/repeat.svg" alt="">Run history</div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+    <div class="topbar">
+      <div class="crumb">
+        Discover <img src="../../assets/icons/chevron-right.svg" alt=""> Trending
+      </div>
+      <div class="actions">
+        <button class="btn btn-ghost"><img src="../../assets/icons/external-link.svg" alt="">IMPORT</button>
+        <button class="btn btn-primary"><img src="../../assets/icons/bolt.svg" alt="">NEW WORKFLOW</button>
+      </div>
+    </div>
+
+    <section class="hero">
+      <div>
+        <h1 class="h-title">Run any ComfyUI workflow.<br/>Right in your browser.</h1>
+        <div class="h-sub">Discover thousands of community workflows. Fork, remix, and publish in one click — no installs, no GPU rental.</div>
+        <div class="h-stat">
+          <div class="stat"><div class="v">12.4k</div><div class="k">workflows</div></div>
+          <div class="stat"><div class="v">1.8M</div><div class="k">runs this week</div></div>
+          <div class="stat"><div class="v">340</div><div class="k">verified</div></div>
+        </div>
+      </div>
+      <div class="pixel-deco">f.</div>
+    </section>
+
+    <div class="filterbar">
+      <div class="tabs">
+        <div class="tab active">All</div>
+        <div class="tab">Image</div>
+        <div class="tab">Video</div>
+        <div class="tab">Audio</div>
+        <div class="tab">Utility</div>
+      </div>
+      <div class="tools">
+        <span class="chip on">verified only</span>
+        <span class="chip">free</span>
+        <span class="chip">≤ 10s</span>
+      </div>
+    </div>
+
+    <div class="grid">
+      <!-- 6 workflow cards -->
+      <div class="card"><div class="thumb t1"><span class="v-badge"><span class="px"></span>VERIFIED</span><span class="runs"><img src="../../assets/icons/repeat.svg">12.3k</span></div><div class="meta"><div class="name">anime-portrait-v3</div><div class="creator"><span class="avatar"></span>@miya · updated 2d</div><div class="tags"><span class="tag">portrait</span><span class="tag">SDXL</span><span class="tag">9 nodes</span></div></div></div>
+
+      <div class="card"><div class="thumb t2"></div><div class="meta"><div class="name">studio-bg-clean</div><div class="creator"><span class="avatar" style="background:var(--mint-3)"></span>@kez · updated 5d</div><div class="tags"><span class="tag">background</span><span class="tag">utility</span></div></div></div>
+
+      <div class="card"><div class="thumb t3"><span class="v-badge"><span class="px"></span>VERIFIED</span></div><div class="meta"><div class="name">retro-arcade-style</div><div class="creator"><span class="avatar" style="background:var(--tangerine-3)"></span>@doc · updated 1w</div><div class="tags"><span class="tag">style</span><span class="tag">pixel</span></div></div></div>
+
+      <div class="card"><div class="thumb t4"></div><div class="meta"><div class="name">upscale-2x-fast</div><div class="creator"><span class="avatar" style="background:var(--blueberry-3)"></span>@nori · updated 3d</div><div class="tags"><span class="tag">upscale</span><span class="tag">≤ 4s</span></div></div></div>
+
+      <div class="card"><div class="thumb t5"><span class="runs"><img src="../../assets/icons/repeat.svg">3.1k</span></div><div class="meta"><div class="name">summer-poster-pack</div><div class="creator"><span class="avatar" style="background:var(--raspberry-3)"></span>@rio · updated 12h</div><div class="tags"><span class="tag">poster</span><span class="tag">remix</span></div></div></div>
+
+      <div class="card"><div class="thumb t6"><span class="v-badge"><span class="px"></span>VERIFIED</span><span class="runs"><img src="../../assets/icons/repeat.svg">38.0k</span></div><div class="meta"><div class="name">cinema-film-grade</div><div class="creator"><span class="avatar" style="background:var(--ube-4)"></span>@ari · updated 4d</div><div class="tags"><span class="tag">video</span><span class="tag">color</span><span class="tag">premium</span></div></div></div>
+    </div>
+  </main>
+
+</div>
+</body>
+</html>

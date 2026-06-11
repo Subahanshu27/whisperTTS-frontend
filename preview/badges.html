@@ -1,0 +1,33 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Badges & Chips</title>
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  html,body{margin:0;padding:0;background:#fff}
+  body{font-family:var(--ff-sans);padding:18px;display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+  .b{font-family:var(--ff-sans);font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:4px 10px;border-radius:999px;display:inline-flex;align-items:center;gap:6px}
+  .alpha{background:#fff;color:var(--ube-7);border:1px dashed var(--ube-4);font-family:var(--ff-pixel);font-size:14px;letter-spacing:.05em;padding:3px 10px}
+  .verified{background:var(--ube-7);color:#fff;border-radius:4px}
+  .verified .px{width:10px;height:10px;background:var(--lemon-4);border-radius:1px;display:inline-block}
+  .chip{background:var(--ube-1);color:var(--ube-7);border-radius:999px;padding:4px 12px;font-size:12px;font-weight:500;text-transform:none;letter-spacing:0}
+  .chip-mint{background:var(--mint-1);color:var(--mint-7)}
+  .chip-rasp{background:var(--raspberry-1);color:var(--raspberry-7)}
+  .chip-blue{background:var(--blueberry-1);color:var(--blueberry-7)}
+  .chip-lemon{background:var(--lemon-1);color:var(--lemon-7)}
+  .pill-status{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;font-size:11px;font-weight:600}
+  .pill-status::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+  .running{background:var(--mint-1);color:var(--mint-7)}
+  .queued{background:var(--lemon-1);color:var(--lemon-7)}
+  .failed{background:var(--raspberry-1);color:var(--raspberry-6)}
+</style></head>
+<body class="floyo-base">
+  <span class="b alpha">ALPHA TESTER</span>
+  <span class="b verified"><span class="px"></span>VERIFIED WORKFLOW</span>
+  <span class="chip">portrait</span>
+  <span class="chip chip-mint">stable-diffusion</span>
+  <span class="chip chip-rasp">nsfw-safe</span>
+  <span class="chip chip-blue">comfy-2.x</span>
+  <span class="chip chip-lemon">remix</span>
+  <span class="pill-status running">running</span>
+  <span class="pill-status queued">queued</span>
+  <span class="pill-status failed">failed</span>
+</body></html>
