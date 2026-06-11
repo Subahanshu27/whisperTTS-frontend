@@ -14,6 +14,18 @@
     //var API_BASE = "http://localhost:5000";
     var API_BASE = "https://3.224.107.180.nip.io";
     var POLL_MS = 2500; // matches the backend's POLL_INTERVAL_SECONDS
+    // Floyo's CDN sits behind Cloudflare, which caps upload bodies at 100 MB.
+    // Larger files fail with a Cloudflare 413 *after* uploading, so reject them
+    // up front instead. This is a Floyo-side ceiling, not our app's.
+    var MAX_UPLOAD_MB = 100;
+    var MAX_UPLOAD_BYTES = MAX_UPLOAD_MB * 1024 * 1024;
+    // Long videos exhaust the workflow's memory (it loads every frame at once) and
+    // fail with "Comfy disconnected", even on a big GPU. Reject them up front.
+    var MAX_DURATION_MIN = 5;
+    var MAX_DURATION_SEC = MAX_DURATION_MIN * 60;
+    // "Try a sample" loads this clip. Deploy a short English sample.mp4 next to
+    // index.html (relative path = same origin, so no CORS needed).
+    var SAMPLE_URL = "sample.mp4";
   
     // ── Inline the Floyo wordmark (light paths, tinted via currentColor) ──
     fetch("assets/floyo-logo-light.svg")
@@ -31,7 +43,6 @@
     // Hindi, Arabic, Hebrew, Thai, Korean and Japanese are omitted because no
     // bundled font can draw their scripts (they'd burn in as □ boxes).
     var LANGS = [
-      { c: "auto", n: "Auto-detect", f: "✨" },
       { c: "en", n: "English", f: "🇬🇧" },
       { c: "es", n: "Spanish", f: "🇪🇸" },
       { c: "fr", n: "French", f: "🇫🇷" },
@@ -119,7 +130,7 @@
       state: "empty",
       file: { name: "product-demo-final.mp4", dur: "2:34", size: "48.2 MB", ext: "MP4" },
       settings: {
-        lang: "auto", font: "Roboto-Bold.ttf", size: "m",
+        lang: "", font: "Roboto-Bold.ttf", size: "m",
         text: "#FFFFFF", outline: "#0B0710", pos: "bottom", cpl: 42, upper: false
       }
     };
@@ -189,6 +200,10 @@
         });
         sel.value = app.settings.font;
       }
+      // The static markup advertises "up to 500 MB"; correct it to the real limit.
+      $$(".fmt").forEach(function (el) {
+        if (/\d+\s*MB/i.test(el.textContent)) el.textContent = "up to " + MAX_UPLOAD_MB + " MB";
+      });
       ["outlineSw", "cplRange", "upToggle"].forEach(function (id) {
         var el = document.getElementById(id);
         var field = el && el.closest ? el.closest(".field") : null;
@@ -222,6 +237,8 @@
       abortActiveRun();
       app._file = null;
       app._videoH = 0; app._videoW = 0;
+      if (app._fileURL) { try { URL.revokeObjectURL(app._fileURL); } catch (e) {} app._fileURL = null; }
+      clearPreviewVideo();
       app.settings = clone(defaults.settings);
       var fs = $("#fontSel"); if (fs) fs.value = app.settings.font;
       syncControls();
@@ -230,7 +247,20 @@
     }
   
     // ── State machine ──
+    function pauseVideosOutside(state) {
+      // Stop audio from a screen we're leaving (e.g. the result video still
+      // playing in the background after "New video").
+      if (state !== "result") {
+        var rv = $('section[data-state="result"] .player video');
+        if (rv) { try { rv.pause(); } catch (e) {} }
+      }
+      if (state !== "ready") {
+        var pv = document.getElementById("previewVideo");
+        if (pv) { try { pv.pause(); } catch (e) {} }
+      }
+    }
     function setState(s) {
+      pauseVideosOutside(s);
       app.state = s;
       $$("[data-state]").forEach(function (el) {
         el.classList.toggle("on", el.getAttribute("data-state") === s);
@@ -257,15 +287,14 @@
           '<span class="check"><i class="ic" style="--ic:url(assets/icons/check-circle.svg)"></i></span>';
         o.addEventListener("click", function () {
           app.settings.lang = l.c;
-          $("#langVal").textContent = l.n;
+          var val = $("#langVal");
+          val.textContent = l.n; val.style.opacity = "";
           $("#langFlag").textContent = l.f;
           // Auto-select the font that can actually render this language's script
           // (e.g. Chinese → YRDZST, Latin/Cyrillic/Greek → Roboto).
-          if (l.c !== "auto") {
-            app.settings.font = recommendedFontFor(l.c);
-            var fs = $("#fontSel"); if (fs) fs.value = app.settings.font;
-            renderCaption();
-          }
+          app.settings.font = recommendedFontFor(l.c);
+          var fs = $("#fontSel"); if (fs) fs.value = app.settings.font;
+          renderCaption();
           closeCombo();
           renderLangs("");
           updateScriptWarning();
@@ -365,8 +394,8 @@
       if (layer && txt) { applyCap(layer, txt); setCapText(txt, displayCaption()); }
     }
   
-    // ── Script-support warning banner (font limitation, not a Whisper limit) ──
-    function updateScriptWarning() {
+    // ── Language helper / prompt banner under the language field ──
+    function updateScriptWarning(prompt) {
       var combo = document.getElementById("langCombo");
       if (!combo) return;
       var field = combo.closest ? combo.closest(".field") : combo.parentNode;
@@ -379,22 +408,23 @@
         else combo.parentNode.appendChild(banner);
       }
       var s = scriptOf(app.settings.lang);
-      if (s.tier === "unsupported") {
+      if (!app.settings.lang) {
+        // Nothing picked yet — always show the instruction; turn it into a clear
+        // warning if the user tried to generate without choosing (prompt = true).
+        banner.style.display = "block";
+        if (prompt) {
+          banner.style.background = "#FFF4E5"; banner.style.color = "#7A4A00"; banner.style.border = "1px solid #FFD8A8";
+          banner.innerHTML = "<strong>⚠ Please select a language first.</strong> Choose the language actually spoken in the video — it tells Whisper what to transcribe.";
+        } else {
+          banner.style.background = "var(--ube-1,#f3eefc)"; banner.style.color = "var(--ube-8,#3a1f6e)"; banner.style.border = "1px solid var(--border,#ece8f3)";
+          banner.innerHTML = "<strong>Select the language spoken in the video.</strong> Pick the one actually used in the audio so the captions transcribe correctly.";
+        }
+      } else if (s.tier === "unsupported") {
         var langName = (LANGS.filter(function (x) { return x.c === app.settings.lang; })[0] || {}).n || "This language";
         banner.style.display = "block";
-        banner.style.background = "#FFF4E5";
-        banner.style.color = "#7A4A00";
-        banner.style.border = "1px solid #FFD8A8";
-        banner.innerHTML = "<strong>⚠ " + langName + " captions can’t be burned in.</strong> Whisper transcribes " +
-          langName + " correctly, but the workflow’s caption fonts don’t include the " + (s.script || "") +
-          " script, so the text renders as □ boxes. To get readable captions, add a Unicode font (e.g. Noto Sans " +
-          (s.script || "").replace(/\s*\(.*\)/, "") + ") to the Floyo workflow’s fonts, or export an SRT and burn it externally.";
-      } else if (s.tier === "auto") {
-        banner.style.display = "block";
-        banner.style.background = "var(--ube-1,#f3eefc)";
-        banner.style.color = "var(--ube-8,#3a1f6e)";
-        banner.style.border = "1px solid var(--border,#ece8f3)";
-        banner.innerHTML = "<strong>Note:</strong> auto-detect transcribes any spoken language. The caption fonts cover Latin, Cyrillic, Greek, Vietnamese and Chinese — if the audio is in another script (e.g. Hindi, Arabic, Korean), the burned-in text may show as □ boxes.";
+        banner.style.background = "#FFF4E5"; banner.style.color = "#7A4A00"; banner.style.border = "1px solid #FFD8A8";
+        banner.innerHTML = "<strong>⚠ " + langName + " captions can’t be burned in.</strong> The workflow’s fonts don’t include the " +
+          (s.script || "") + " script, so the text renders as □ boxes.";
       } else {
         banner.style.display = "none";
       }
@@ -402,8 +432,13 @@
   
     // ── Sync controls from state ──
     function syncControls() {
-      var l = LANGS.filter(function (x) { return x.c === app.settings.lang; })[0] || LANGS[0];
-      $("#langVal").textContent = l.n; $("#langFlag").textContent = l.f;
+      var l = LANGS.filter(function (x) { return x.c === app.settings.lang; })[0];
+      var val = $("#langVal"), flag = $("#langFlag");
+      if (l) {
+        val.textContent = l.n; flag.textContent = l.f; val.style.opacity = "";
+      } else {
+        val.textContent = "Select language…"; flag.textContent = "🌐"; val.style.opacity = "0.6";
+      }
       $("#fontSel").value = app.settings.font;
       $$("#sizeSeg button").forEach(function (b) { b.classList.toggle("on", b.getAttribute("data-v") === app.settings.size); });
       $$("#posSeg button").forEach(function (b) { b.classList.toggle("on", b.getAttribute("data-v") === app.settings.pos); });
@@ -467,7 +502,7 @@
       var okType = /mp4|quicktime|mov|webm|matroska|avi/i.test(file.type) || /\.(mp4|mov|webm|mkv|avi|m4v)$/i.test(file.name);
       if (!okType) { showError("Unsupported file type", "Auto Subtitles works with MP4, MOV, WEBM, MKV, AVI and M4V video. That file looked like “" + (file.type || extOf(file.name)) + "”.", "validation · rejected before upload"); return; }
       if (file.size === 0) { showError("That file is empty", "The selected file is 0 bytes — it may be corrupted or still copying. Pick the video again.", "validation · 0-byte file"); return; }
-      if (file.size > 500 * 1024 * 1024) { showError("File is too large", "The max upload size is 500 MB. Try trimming or compressing the clip first.", "validation · " + humanSize(file.size) + " > 500 MB"); return; }
+      if (file.size > MAX_UPLOAD_BYTES) { showError("Video is too large", "Floyo accepts uploads up to " + MAX_UPLOAD_MB + " MB. This file is " + humanSize(file.size) + " — trim it or compress it (lower the resolution/bitrate) and try again.", "validation · " + humanSize(file.size) + " > " + MAX_UPLOAD_MB + " MB"); return; }
   
       // Abort any run/poll still in flight for a previous file, and fully reset
       // per-file state so nothing from the last video can leak into this one.
@@ -482,29 +517,21 @@
       // Token guards against a slow metadata read from a *previous* file landing
       // after this one was selected (a classic stale-state race).
       var gen = (app._fileGen = (app._fileGen || 0) + 1);
-      addVideo();
   
-      try {
-        var url = URL.createObjectURL(file);
-        var v = document.createElement("video");
-        v.preload = "metadata";
-        var cleanup = function () { try { URL.revokeObjectURL(url); } catch (e) {} };
-        v.onloadedmetadata = function () {
-          if (gen !== app._fileGen) { cleanup(); return; } // superseded by a newer file
-          app.file.dur = fmtDur(v.duration);
-          app._videoH = v.videoHeight || 0;
-          app._videoW = v.videoWidth || 0;
-          if (app.state === "ready") syncControls();
-          cleanup();
-        };
-        v.onerror = cleanup;
-        v.src = url;
-      } catch (e) {}
+      // Keep a persistent object URL for this file so we can show a real preview
+      // (and read its metadata from the same element). Revoke the previous one.
+      if (app._fileURL) { try { URL.revokeObjectURL(app._fileURL); } catch (e) {} }
+      app._fileURL = URL.createObjectURL(file);
+  
+      addVideo();
+      mountPreviewVideo(app._fileURL, gen);
     }
     function addVideo() {
       setState("loading");
       save();
-      setTimeout(function () { syncControls(); setState("ready"); }, 700);
+      // If the file was rejected meanwhile (e.g. too long), app._file is null —
+      // don't flip to the ready screen over the error.
+      setTimeout(function () { if (app._file) { syncControls(); setState("ready"); } }, 700);
     }
   
     fileInput.addEventListener("change", function () {
@@ -519,8 +546,31 @@
     });
     $("#sampleBtn").addEventListener("click", function (e) {
       e.stopPropagation();
-      showError("Pick a real video", "The sample card is just a visual placeholder — there’s no file behind it. Choose a video from your computer and the app will run it through Floyo for real.", "no file selected");
+      loadSample();
     });
+  
+    // "Try a sample": fetch the bundled sample clip, reset to default settings,
+    // and run it through the normal upload path so the user is one click from
+    // generating. Place a short English sample.mp4 next to index.html.
+    function loadSample() {
+      app.settings = clone(defaults.settings);   // reset everything
+      app.settings.lang = "en";                   // the bundled sample is English
+      app.settings.font = recommendedFontFor("en");
+      var fs = $("#fontSel"); if (fs) fs.value = app.settings.font;
+      setState("loading");
+      fetch(SAMPLE_URL, { cache: "force-cache" })
+        .then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.blob(); })
+        .then(function (blob) {
+          var file = new File([blob], "sample.mp4", { type: blob.type || "video/mp4" });
+          if (!file.size) throw new Error("empty sample");
+          acceptFile(file);   // runs the same validation + preview + ready flow
+        })
+        .catch(function (err) {
+          showError("Sample unavailable",
+            "Couldn’t load the sample clip. Make sure a short sample.mp4 is deployed alongside the app (at " + SAMPLE_URL + ").",
+            "sample · " + (err && err.message ? err.message : "fetch failed"));
+        });
+    }
   
     ["dragenter", "dragover"].forEach(function (ev) {
       dropzone.addEventListener(ev, function (e) { e.preventDefault(); dropzone.classList.add("drag"); });
@@ -533,7 +583,7 @@
     });
   
     $("#replaceBtn").addEventListener("click", function () { fileInput.click(); });
-    $("#removeBtn").addEventListener("click", function () { abortActiveRun(); app._file = null; setState("empty"); });
+    $("#removeBtn").addEventListener("click", function () { abortActiveRun(); app._file = null; if (app._fileURL) { try { URL.revokeObjectURL(app._fileURL); } catch (e) {} app._fileURL = null; } clearPreviewVideo(); setState("empty"); });
     $("#newBtn").addEventListener("click", function () { startFresh(); closeNav(); });
   
     /* ════════════════════════════════════════════════════════════════
@@ -686,6 +736,19 @@
     function runProcessing() {
       if (!app._file) {
         showError("No video selected", "Choose a video first — then hit Generate subtitles and it’ll run through the Floyo workflow.", "no file in memory");
+        return;
+      }
+      if (!app.settings.lang) {
+        // No language chosen — keep them on the ready screen, prompt clearly,
+        // flash the language field, and don't spend a run.
+        updateScriptWarning(true);
+        toast("Select the language spoken in the video first.");
+        var combo = document.getElementById("langCombo");
+        if (combo) {
+          combo.scrollIntoView({ behavior: "smooth", block: "center" });
+          combo.style.transition = "box-shadow .2s"; combo.style.boxShadow = "0 0 0 3px rgba(214,69,69,.35)";
+          setTimeout(function () { combo.style.boxShadow = ""; }, 1400);
+        }
         return;
       }
       // Fresh run: invalidate anything previous and reset all per-run state.
@@ -883,6 +946,74 @@
       v.style.background = "#0B0710";
       v.style.borderRadius = "inherit";
       player.appendChild(v);
+    }
+  
+    // Show the actual uploaded clip in the READY preview box, behind the caption
+    // overlay (so it doubles as a live preview of where captions will sit). Also
+    // reads duration/dimensions and enforces the max-duration guard.
+    function mountPreviewVideo(url, gen) {
+      var player = $('section[data-state="ready"] .player');
+      if (!player) return;
+      var prev = player.querySelector("#previewVideo");
+      if (prev) { try { prev.pause(); } catch (e) {} prev.remove(); }
+  
+      var v = document.createElement("video");
+      v.id = "previewVideo";
+      v.src = url;
+      v.muted = true;
+      v.playsInline = true;
+      v.preload = "metadata";
+      v.style.cssText = "position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0;background:#0B0710;";
+      player.insertBefore(v, player.firstChild); // behind tag / play / caption / dur
+  
+      var playBtn = player.querySelector(".play");
+      var capLayer = player.querySelector(".cap-layer") || document.getElementById("capLayer");
+  
+      v.onloadedmetadata = function () {
+        if (gen !== app._fileGen) return; // superseded by a newer file
+        app.file.dur = fmtDur(v.duration);
+        app._videoH = v.videoHeight || 0;
+        app._videoW = v.videoWidth || 0;
+        if (v.duration > MAX_DURATION_SEC) { rejectLongVideo(v.duration); return; }
+        try { v.currentTime = Math.min(0.1, (v.duration || 1) / 2); } catch (e) {} // render a poster frame
+        if (app.state === "ready") syncControls();
+      };
+  
+      function toggle() { if (v.paused) { v.muted = false; v.play(); } else { v.pause(); } }
+      // Click anywhere on the preview to play/pause (standard video behaviour),
+      // so there's a way to pause once the play button hides during playback.
+      player.style.cursor = "pointer";
+      player.onclick = function () { toggle(); };
+      if (playBtn) {
+        playBtn.style.cursor = "pointer";
+        playBtn.onclick = function (e) { e.stopPropagation(); toggle(); };
+      }
+      v.onplay = function () { if (playBtn) playBtn.style.display = "none"; if (capLayer) capLayer.style.display = "none"; };
+      var restore = function () { if (playBtn) playBtn.style.display = ""; if (capLayer) capLayer.style.display = ""; };
+      v.onpause = restore; v.onended = restore;
+      return v;
+    }
+  
+    function clearPreviewVideo() {
+      var player = $('section[data-state="ready"] .player');
+      if (!player) return;
+      var v = player.querySelector("#previewVideo");
+      if (v) { try { v.pause(); } catch (e) {} v.remove(); }
+      player.onclick = null; player.style.cursor = "";
+      var playBtn = player.querySelector(".play");
+      if (playBtn) playBtn.style.display = "";
+      var capLayer = player.querySelector(".cap-layer") || document.getElementById("capLayer");
+      if (capLayer) capLayer.style.display = "";
+    }
+  
+    function rejectLongVideo(durationSec) {
+      clearPreviewVideo();
+      if (app._fileURL) { try { URL.revokeObjectURL(app._fileURL); } catch (e) {} app._fileURL = null; }
+      app._file = null;
+      showError("Video is too long",
+        "This clip is " + fmtDur(durationSec) + ". Videos over " + MAX_DURATION_MIN +
+        " minutes usually fail — the subtitle workflow loads every frame into memory at once and runs out, even on a large GPU. Trim it to a shorter section (a minute or two is ideal) and try again.",
+        "validation · " + fmtDur(durationSec) + " > " + MAX_DURATION_MIN + " min");
     }
   
     $("#genBtn").addEventListener("click", function () { runProcessing(); });
