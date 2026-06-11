@@ -11,7 +11,6 @@
        CONFIG — where the Flask backend is running.
        The Flask demo listens on :5000 by default.
        ════════════════════════════════════════════════════════════════ */
-    //var API_BASE = "http://localhost:5000";
     var API_BASE = "https://3.224.107.180.nip.io";
     var POLL_MS = 2500; // matches the backend's POLL_INTERVAL_SECONDS
     // Floyo's CDN sits behind Cloudflare, which caps upload bodies at 100 MB.
@@ -137,6 +136,9 @@
     var app = load();
     app._file = null;   // the REAL File object selected by the user (never persisted)
     app._jobId = null;  // current backend job id
+    // The spoken language must be re-chosen every session — never restore a saved
+    // one on refresh, so the "select a language" prompt always shows on a fresh load.
+    app.settings.lang = "";
   
     // ── Fonts actually available on the Floyo "Add Subtitles To Frames" node ──
     var FONTS = [

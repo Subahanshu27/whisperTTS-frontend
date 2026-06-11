@@ -3,7 +3,72 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Auto Subtitles · Floyo</title>
+<title>AI Subtitle Generator — Free Auto Captions for Video | Floyo</title>
+<meta name="description" content="Add accurate, burned-in captions to any video for free. No login, no watermark. Powered by an open-source Whisper workflow on Floyo — upload, pick a language, style your captions, and download an MP4." />
+
+<!-- Update this canonical/og URL to your live deployment URL before launch -->
+<link rel="canonical" href="https://floyo.ai/tools/ai-subtitle-generator" />
+
+<!-- Open Graph -->
+<meta property="og:title" content="AI Subtitle Generator — Free Auto Captions for Video | Floyo" />
+<meta property="og:description" content="Add accurate, burned-in captions to any video for free. No login, no watermark. Built on an open-source Whisper workflow on Floyo." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://floyo.ai/tools/ai-subtitle-generator" />
+<meta property="og:image" content="https://floyo.ai/og/ai-subtitle-generator.png" />
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="AI Subtitle Generator — Free Auto Captions for Video | Floyo" />
+<meta name="twitter:description" content="Add accurate, burned-in captions to any video for free. No login, no watermark." />
+
+<!-- Schema: WebApplication -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Floyo AI Subtitle Generator",
+  "url": "https://floyo.ai/tools/ai-subtitle-generator",
+  "applicationCategory": "MultimediaApplication",
+  "operatingSystem": "Web browser",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+  "description": "Free AI subtitle generator. Add accurate, burned-in captions to any video. No login, no watermark.",
+  "creator": { "@type": "Organization", "name": "Floyo", "url": "https://floyo.ai" }
+}
+</script>
+
+<!-- Schema: HowTo -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "HowTo",
+  "name": "How to Add Subtitles to a Video with AI",
+  "description": "Add accurate, AI-generated burned-in subtitles to a video using the free Floyo subtitle generator.",
+  "step": [
+    { "@type": "HowToStep", "name": "Upload your video", "text": "Drag and drop your video or choose a file. Supports MP4 and MOV up to 100 MB and 5 minutes." },
+    { "@type": "HowToStep", "name": "Pick language and style", "text": "Select the language spoken in the video and style the captions — font, size, colour and position — with a live preview. Transcription runs on an open-source Whisper workflow on Floyo." },
+    { "@type": "HowToStep", "name": "Download", "text": "Generate and download your video as an MP4 with the captions burned in." }
+  ]
+}
+</script>
+
+<!-- Schema: FAQPage (matches the visible FAQ below) -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    { "@type": "Question", "name": "Is this subtitle generator really free?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. There is no login, no credit card and no watermark on your exported video. It is a demo of what the Floyo API can do." } },
+    { "@type": "Question", "name": "What video formats and sizes are supported?", "acceptedAnswer": { "@type": "Answer", "text": "MP4 and MOV files up to 100 MB and about 5 minutes long. Trim or compress longer or larger files first." } },
+    { "@type": "Question", "name": "How accurate are the subtitles?", "acceptedAnswer": { "@type": "Answer", "text": "It depends on audio quality, but the Whisper model typically achieves high accuracy on clear speech." } },
+    { "@type": "Question", "name": "Which languages can it caption?", "acceptedAnswer": { "@type": "Answer", "text": "Whisper transcribes many spoken languages. Burned-in captions render cleanly for Latin, Cyrillic, Greek, Vietnamese and Chinese scripts, and the right font is selected automatically for the language you choose." } },
+    { "@type": "Question", "name": "How long can the video be?", "acceptedAnswer": { "@type": "Answer", "text": "Up to about 5 minutes. The captioning workflow loads every frame into memory, so longer clips can exhaust GPU memory and fail." } },
+    { "@type": "Question", "name": "Can I customise the subtitle style?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. Change the font, size, colour and position, and see a live preview before you render." } },
+    { "@type": "Question", "name": "What is Floyo?", "acceptedAnswer": { "@type": "Answer", "text": "Floyo is the only platform with team collaboration for ComfyUI in the browser. You run open-source AI workflows with no install, share run history, assets and models across your team, and pay only when you generate. This subtitle generator is built on a Whisper workflow running on Floyo." } },
+    { "@type": "Question", "name": "What is ComfyUI?", "acceptedAnswer": { "@type": "Answer", "text": "ComfyUI is an open-source visual workflow engine for AI. You connect nodes to build pipelines that transcribe audio, generate images or edit video. Floyo runs ComfyUI in the browser so your team can build, share and run workflows without installing anything locally." } },
+    { "@type": "Question", "name": "What is the Floyo API?", "acceptedAnswer": { "@type": "Answer", "text": "The Floyo API lets you run any ComfyUI workflow programmatically. You call one endpoint and Floyo handles the pipeline — no GPU setup, no model hosting — and you pay only when you generate. This subtitle tool is one example built on it." } }
+  ]
+}
+</script>
 <link rel="stylesheet" href="colors_and_type.css" />
 <style>
 /* ─────────────────────────────────────────────────────────────────
@@ -85,6 +150,14 @@ body {
 /* Main */
 .main { overflow-y: auto; padding: 26px clamp(20px, 5vw, 64px) 96px; }
 .page-head { max-width: 940px; margin: 0 auto 26px; }
+.topbar { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 16px; }
+.topbar .crumb { margin-bottom: 0; }
+.topnav { display: flex; align-items: center; gap: 22px; }
+.topnav a { font-size: 14px; font-weight: 500; color: var(--fg-muted); text-decoration: none; white-space: nowrap; }
+.topnav a:hover { color: var(--ube-5); }
+.topnav a.nav-cta { background: var(--ube-6); color: #fff; padding: 7px 16px; border-radius: 8px; font-weight: 600; font-size: 13.5px; }
+.topnav a.nav-cta:hover { background: var(--ube-7); }
+@media (max-width: 720px) { .topnav a:not(.nav-cta) { display: none; } }
 .crumb { display: flex; align-items: center; gap: 8px; color: var(--fg-muted); font-size: 12px; margin-bottom: 16px; }
 .crumb .ic { width: 13px; height: 13px; opacity: .6; }
 .crumb b { color: var(--fg); font-weight: 600; }
@@ -304,6 +377,40 @@ body {
   .result-actions .btn { min-width: 0; }
 }
 </style>
+<style>
+/* ── SEO content sections (matches the Floyo design tokens) ── */
+.seo { max-width: 940px; margin: 8px auto 0; padding: 8px 24px 72px; }
+.seo .sec { padding: 40px 0; border-top: 1px solid var(--border, #ece8f3); }
+.seo h2 { font-size: 28px; font-weight: 800; letter-spacing: -.02em; color: var(--ube-8, #250F4E); margin: 0 0 8px; }
+.seo .intro { font-size: 16px; color: var(--fg-muted, #715D98); margin: 0 0 28px; max-width: 640px; }
+.seo h3 { font-size: 17px; font-weight: 700; color: var(--ube-7, #3A206B); margin: 0 0 6px; }
+.seo p { font-size: 15px; line-height: 1.65; color: var(--fg, #2a2342); margin: 0 0 12px; }
+.seo a { color: var(--ube-5, #8358D4); text-decoration: underline; text-underline-offset: 2px; }
+.seo .grid { display: grid; gap: 20px; }
+.seo .g3 { grid-template-columns: repeat(3, 1fr); }
+.seo .g4 { grid-template-columns: repeat(2, 1fr); }
+.seo .card { background: #fff; border: 1px solid var(--border, #ece8f3); border-radius: 14px; padding: 20px; }
+.seo .num { width: 30px; height: 30px; border-radius: 9px; background: var(--ube-1, #F7F1FF); color: var(--ube-6, #543294); font-weight: 800; display: flex; align-items: center; justify-content: center; margin-bottom: 12px; }
+.seo details { border: 1px solid var(--border, #ece8f3); border-radius: 12px; margin-bottom: 10px; background: #fff; }
+.seo details summary { cursor: pointer; padding: 14px 16px; font-weight: 600; font-size: 15px; color: var(--ube-8, #250F4E); list-style: none; }
+.seo details summary::-webkit-details-marker { display: none; }
+.seo details summary::after { content: "+"; float: right; color: var(--ube-5, #8358D4); font-weight: 700; }
+.seo details[open] summary::after { content: "\2013"; }
+.seo details .ans { padding: 0 16px 14px; font-size: 14.5px; color: var(--fg-muted, #5C4D7A); line-height: 1.6; margin: 0; }
+.seo .cta { text-align: center; background: linear-gradient(135deg, var(--ube-6,#543294), var(--ube-5,#8358D4)); color: #fff; border-radius: 18px; padding: 40px 28px; margin-top: 40px; }
+.seo .cta h2 { color: #fff; }
+.seo .cta p { color: rgba(255,255,255,.85); max-width: 560px; margin: 0 auto 20px; }
+.seo .btnrow { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+.seo .btn1 { background: #fff; color: var(--ube-7,#3A206B); padding: 11px 22px; border-radius: 10px; font-weight: 700; text-decoration: none; font-size: 14px; }
+.seo .btn2 { background: rgba(255,255,255,.16); color: #fff; padding: 11px 22px; border-radius: 10px; font-weight: 600; text-decoration: none; font-size: 14px; border: 1px solid rgba(255,255,255,.3); }
+.seo .tools { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 8px; }
+.seo .tool { display: flex; align-items: center; gap: 8px; padding: 14px; border: 1px solid var(--border,#ece8f3); border-radius: 12px; text-decoration: none; color: var(--ube-7,#3A206B); font-weight: 600; font-size: 14px; }
+.seo .tool:hover { background: var(--ube-1,#F7F1FF); }
+.seo .foot { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; padding: 28px 0 0; border-top: 1px solid var(--border,#ece8f3); margin-top: 40px; font-size: 13px; color: var(--fg-muted,#715D98); }
+.seo .foot a { color: var(--fg-muted,#715D98); text-decoration: none; margin-left: 16px; }
+.seo .foot a:hover { color: var(--ube-5,#8358D4); }
+@media (max-width: 760px) { .seo .g3, .seo .g4, .seo .tools { grid-template-columns: 1fr; } }
+</style>
 </head>
 <body class="floyo-base">
 
@@ -371,7 +478,14 @@ body {
   <!-- MAIN -->
   <main class="main" id="main">
     <div class="page-head">
-      <div class="crumb">Apps <i class="ic" style="--ic:url(assets/icons/chevron-right.svg)"></i> <b>Auto Subtitles</b></div>
+      <div class="topbar">
+        <div class="crumb">Apps <i class="ic" style="--ic:url(assets/icons/chevron-right.svg)"></i> <b>Auto Subtitles</b></div>
+        <nav class="topnav">
+          <a href="https://floyo.ai/workflows">Workflows</a>
+          <a href="https://floyo.ai/tools">Tools</a>
+          <a class="nav-cta" href="https://docs.floyo.ai">API Docs</a>
+        </nav>
+      </div>
       <h1 class="page-title">Auto subtitles</h1>
       <p class="page-sub">Add accurate, burned-in captions to any video. Powered by the Whisper auto-subtitles workflow on Floyo.</p>
     </div>
@@ -601,6 +715,92 @@ body {
       </section>
 
     </div>
+    <div class="seo">
+      <section class="sec">
+        <h2>How to add subtitles to your video</h2>
+        <p class="intro">Three steps, about a minute, nothing to install.</p>
+        <div class="grid g3">
+          <div><div class="num">1</div><h3>Upload your video</h3><p>Drag and drop your file or choose one. MP4 and MOV up to 100&nbsp;MB and 5 minutes.</p></div>
+          <div><div class="num">2</div><h3>Pick language &amp; style</h3><p>Select the language spoken in the clip and style the captions — font, size, colour and position — with a live preview. Transcription runs on an open-source Whisper workflow on Floyo.</p></div>
+          <div><div class="num">3</div><h3>Download</h3><p>Generate and download your video as an MP4 with the captions burned in.</p></div>
+        </div>
+      </section>
+
+      <section class="sec">
+        <h2>Accurate AI subtitles, burned right into your video</h2>
+        <p class="intro">Everything you need to caption and style your clips.</p>
+        <div class="grid g4">
+          <div class="card"><h3>Auto-generate with AI</h3><p>An open-source Whisper workflow handles speech recognition — accents, background noise and fast speech — with no manual transcription.</p></div>
+          <div class="card"><h3>Built-in language support</h3><p>Captions render cleanly for Latin, Cyrillic, Greek, Vietnamese and Chinese scripts, and the right font is chosen automatically for the language you pick.</p></div>
+          <div class="card"><h3>Customise the style</h3><p>Set the font, size, colour and position, and preview exactly how the captions will sit before you render.</p></div>
+          <div class="card"><h3>Burned-in MP4 output</h3><p>Download a ready-to-post MP4 with hardcoded captions — no extra software and no separate file to manage.</p></div>
+        </div>
+      </section>
+
+      <section class="sec">
+        <h2>Who uses this subtitle generator?</h2>
+        <p class="intro">Creators, teams and developers — here's how.</p>
+        <div class="grid g4">
+          <div class="card"><h3>Content creators</h3><p>Caption YouTube videos, TikToks and Reels. Most people watch with sound off — subtitles keep them watching.</p></div>
+          <div class="card"><h3>Marketers &amp; agencies</h3><p>Subtitle ads, product demos and webinar recordings so they land in any feed.</p></div>
+          <div class="card"><h3>Educators &amp; course creators</h3><p>Make lectures and tutorials accessible and easier for non-native speakers to follow.</p></div>
+          <div class="card"><h3>Developers &amp; teams</h3><p>Use the <a href="https://docs.floyo.ai">Floyo API</a> to build subtitle generation into your own product and run ComfyUI workflows programmatically.</p></div>
+        </div>
+      </section>
+
+      <section class="sec">
+        <h2>How does an AI subtitle generator work?</h2>
+        <p>An AI subtitle generator uses speech recognition to turn the spoken words in a video into text. First, the audio track is extracted from the video. Then an AI model analyses the audio and maps it to text, detecting word boundaries and pauses. Finally, the text is split into timed segments and burned into the video frames. Modern models like Whisper support many languages and handle accents and background noise well.</p>
+        <h3>What is Floyo?</h3>
+        <p>Floyo is the only platform with team collaboration for ComfyUI in the browser. You run open-source AI workflows with no install, share run history, assets and models across your team, and pay only when you generate. This tool runs a ComfyUI workflow on Floyo that chains audio extraction, Whisper transcription and video rendering. <a href="https://floyo.ai">Try it at floyo.ai.</a></p>
+      </section>
+
+      <section class="sec">
+        <h2>Frequently asked questions</h2>
+        <div style="margin-top:20px;">
+          <details><summary>Is this subtitle generator really free?</summary><p class="ans">Yes. There is no login, no credit card and no watermark on your exported video. It is a demo of what the Floyo API can do.</p></details>
+          <details><summary>What video formats and sizes are supported?</summary><p class="ans">MP4 and MOV files up to 100&nbsp;MB and about 5 minutes long. Trim or compress longer or larger files first.</p></details>
+          <details><summary>How accurate are the subtitles?</summary><p class="ans">It depends on audio quality, but the Whisper model typically achieves high accuracy on clear speech.</p></details>
+          <details><summary>Which languages can it caption?</summary><p class="ans">Whisper transcribes many spoken languages. Burned-in captions render cleanly for Latin, Cyrillic, Greek, Vietnamese and Chinese scripts, and the right font is selected automatically for the language you choose.</p></details>
+          <details><summary>How long can the video be?</summary><p class="ans">Up to about 5 minutes. The captioning workflow loads every frame into memory, so longer clips can exhaust GPU memory and fail.</p></details>
+          <details><summary>Can I customise the subtitle style?</summary><p class="ans">Yes. Change the font, size, colour and position, and see a live preview before you render.</p></details>
+          <details><summary>What is Floyo?</summary><p class="ans">Floyo is the only platform with team collaboration for ComfyUI in the browser. You run open-source AI workflows with no install, share run history, assets and models across your team, and pay only when you generate. <a href="https://floyo.ai">Try it at floyo.ai.</a></p></details>
+          <details><summary>What is ComfyUI?</summary><p class="ans">ComfyUI is an open-source visual workflow engine for AI. You connect nodes to build pipelines that transcribe audio, generate images or edit video. Floyo runs ComfyUI in the browser. <a href="https://floyo.ai/workflows">Browse workflows.</a></p></details>
+          <details><summary>What is the Floyo API?</summary><p class="ans">The Floyo API lets you run any ComfyUI workflow programmatically — one endpoint, no GPU setup, pay only when you generate. This subtitle tool is one example built on it. <a href="https://docs.floyo.ai/floyo-api-introduction">Read the API docs.</a></p></details>
+        </div>
+      </section>
+
+      <section class="cta">
+        <h2>Run open-source AI workflows in the browser</h2>
+        <p>Floyo is the only platform with team collaboration for ComfyUI. No install. Shared run history, assets and models. Pay only when you generate.</p>
+        <div class="btnrow">
+          <a class="btn1" href="https://floyo.ai">Try Floyo free</a>
+          <a class="btn2" href="https://docs.floyo.ai">Explore the API</a>
+        </div>
+      </section>
+
+      <section class="sec">
+        <h2>More free AI tools</h2>
+        <p class="intro">More open-source AI workflows running on Floyo.</p>
+        <div class="tools">
+          <a class="tool" href="https://floyo.ai/tools/ai-image-generator">🖼&nbsp; AI Image Generator</a>
+          <a class="tool" href="https://floyo.ai/tools/ai-video-generator">🎬&nbsp; AI Video Generator</a>
+          <a class="tool" href="https://floyo.ai/tools/background-remover">✂&nbsp; Background Remover</a>
+          <a class="tool" href="https://floyo.ai/tools/image-upscaler">🔍&nbsp; Image Upscaler</a>
+        </div>
+      </section>
+
+      <div class="foot">
+        <div>© 2026 Floyo. All rights reserved.</div>
+        <div>
+          <a href="https://floyo.ai">Home</a>
+          <a href="https://floyo.ai/workflows">Workflows</a>
+          <a href="https://docs.floyo.ai">API Docs</a>
+          <a href="https://floyo.ai/privacy">Privacy</a>
+        </div>
+      </div>
+    </div>
+
   </main>
 </div>
 
