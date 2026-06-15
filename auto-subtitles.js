@@ -123,6 +123,10 @@
     ];
   
     var SAMPLE_CAPTION = "So here’s how the whole thing works.";
+    // The Whisper workflow burns captions one word at a time, so the live preview
+    // cycles single words (karaoke-style) instead of showing a full sentence.
+    var SAMPLE_WORDS = SAMPLE_CAPTION.replace(/[.]/g, "").split(/\s+/);
+    var capWordIdx = 0;
   
     // ── Default state ──
     var defaults = {
@@ -202,9 +206,10 @@
         });
         sel.value = app.settings.font;
       }
-      // The static markup advertises "up to 500 MB"; correct it to the real limit.
+      // The static markup advertises "up to 500 MB" / "≤ 30 min"; correct both.
       $$(".fmt").forEach(function (el) {
         if (/\d+\s*MB/i.test(el.textContent)) el.textContent = "up to " + MAX_UPLOAD_MB + " MB";
+        else if (/\d+\s*min/i.test(el.textContent)) el.textContent = "≤ " + MAX_DURATION_MIN + " min";
       });
       ["outlineSw", "cplRange", "upToggle"].forEach(function (id) {
         var el = document.getElementById(id);
@@ -376,13 +381,7 @@
       if (s.text === "#FFFFFF" && s.outline === "#FFFFFF") textEl.style.color = "#1A0C34";
     }
     function displayCaption() {
-      var t = SAMPLE_CAPTION;
-      var cpl = app.settings.cpl;
-      if (t.length > cpl) {
-        var mid = t.lastIndexOf(" ", cpl);
-        if (mid > 0) t = t.slice(0, mid) + "\n" + t.slice(mid + 1);
-      }
-      return t;
+      return SAMPLE_WORDS[capWordIdx % SAMPLE_WORDS.length] || "";
     }
     function setCapText(el, text) {
       el.textContent = "";
@@ -395,6 +394,12 @@
       var layer = $("#capLayer"), txt = $("#capText");
       if (layer && txt) { applyCap(layer, txt); setCapText(txt, displayCaption()); }
     }
+    // Advance the preview one word at a time so it matches the word-by-word output.
+    setInterval(function () {
+      capWordIdx = (capWordIdx + 1) % SAMPLE_WORDS.length;
+      var txt = $("#capText");
+      if (txt) setCapText(txt, displayCaption());
+    }, 650);
   
     // ── Language helper / prompt banner under the language field ──
     function updateScriptWarning(prompt) {
@@ -432,6 +437,21 @@
       }
     }
   
+    // Rough upfront estimate from clip length. Render time scales with frames
+    // (full-res, no downscale), plus upload/transcribe/warm-up overhead. Shown as
+    // a range because the first run of a session is slower than a warm one.
+    function estRange(sec) {
+      // Calibrated to real render speed (~1-min clip ≈ 5 min): warm-up + ~3.5x.
+      var total = 45 + 3.5 * sec;
+      var lo = Math.max(1, Math.round(total * 0.7 / 60));
+      var hi = Math.max(lo + 1, Math.round(total * 1.3 / 60));
+      return "~" + lo + "–" + hi + " min";
+    }
+    function estimateText(sec) {
+      if (!sec || !isFinite(sec)) return "Estimated time depends on your clip · uses render credits";
+      return "Estimated " + estRange(sec) + " · uses render credits";
+    }
+  
     // ── Sync controls from state ──
     function syncControls() {
       var l = LANGS.filter(function (x) { return x.c === app.settings.lang; })[0];
@@ -448,6 +468,8 @@
       $("#fName").textContent = app.file.name;
       $("#fSub").textContent = app.file.dur + " · " + app.file.size + " · " + app.file.ext;
       $("#playerDur").textContent = app.file.dur;
+      var est = document.getElementById("ctaEst");
+      if (est) est.textContent = estimateText(app._videoDur);
       renderCaption();
       updateScriptWarning();
     }
@@ -723,7 +745,10 @@
   
     function resetProcessingUI() {
       cancelled = false;
+      app._renderCreeping = false;
       clearProcessingTimers();
+      var pe = document.getElementById("procEst");
+      if (pe) pe.textContent = app._videoDur ? ("Estimated total " + estRange(app._videoDur)) : "";
       $$(".step", $("#steps")).forEach(function (st) {
         st.className = "step pending";
         st.querySelector(".marker").innerHTML = '<span class="dot"></span>';
@@ -863,7 +888,9 @@
       } else if (st === "running") {
         markStep(0, "done"); markStep(1, "done");
         setStepsUpTo(2);
-        $("#procStatus").textContent = msg || "Transcribing & burning captions…";
+        $("#procStatus").textContent = msg || "Rendering captions into your video… this can take a few minutes.";
+        // Keep easing forward through the long render instead of parking at 88%.
+        if (!app._renderCreeping) { app._renderCreeping = true; startCreep(Math.max(creepVal, 60), 97, 240000); }
         schedulePoll(token);
       } else if (st === "done") {
         finishProcessing(job);
@@ -974,6 +1001,7 @@
       v.onloadedmetadata = function () {
         if (gen !== app._fileGen) return; // superseded by a newer file
         app.file.dur = fmtDur(v.duration);
+        app._videoDur = v.duration || 0;
         app._videoH = v.videoHeight || 0;
         app._videoW = v.videoWidth || 0;
         if (v.duration > MAX_DURATION_SEC) { rejectLongVideo(v.duration); return; }

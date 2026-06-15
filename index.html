@@ -313,6 +313,7 @@ body {
 @keyframes spin { to { transform: rotate(360deg); } }
 .proc-pct { font-family: var(--ff-display); font-size: 56px; color: var(--ube-7); line-height: 1; }
 .proc-status { font-size: 14px; color: var(--fg-muted); margin-top: 10px; min-height: 21px; }
+.proc-est { font-size: 12.5px; color: var(--fg-subtle); margin-top: 4px; min-height: 16px; }
 .proc-bar { height: 10px; border-radius: 999px; background: var(--ube-1); border: 1px solid var(--ube-2); overflow: hidden; margin: 26px 0; }
 .proc-bar i { display: block; height: 100%; width: 0%; background: linear-gradient(90deg, var(--ube-4), var(--ube-6)); transition: width var(--dur-slow) var(--ease-out); }
 .steps { display: flex; flex-direction: column; gap: 4px; text-align: left; }
@@ -411,6 +412,58 @@ body {
 .seo .foot a:hover { color: var(--ube-5,#8358D4); }
 @media (max-width: 760px) { .seo .g3, .seo .g4, .seo .tools { grid-template-columns: 1fr; } }
 </style>
+<style>
+/* ── Dark mode (overrides the light design tokens + hardcoded surfaces) ── */
+html[data-theme="dark"] {
+  --bg-subtle: #14101E;
+  --fg: #ECE7F5;
+  --fg-muted: #A99FC2;
+  --fg-subtle: #847A9E;
+  --border: #2E2746;
+  --ube-1: #221A35;
+  --ube-2: #2C2344;
+  --ube-3: #3A2D58;
+  color-scheme: dark;
+}
+html[data-theme="dark"] .side,
+html[data-theme="dark"] .card,
+html[data-theme="dark"] .btn-ghost,
+html[data-theme="dark"] .iconbtn,
+html[data-theme="dark"] .combo .control,
+html[data-theme="dark"] .dz-ico,
+html[data-theme="dark"] .err-ico,
+html[data-theme="dark"] .step .marker,
+html[data-theme="dark"] .menu-btn,
+html[data-theme="dark"] .seo .card,
+html[data-theme="dark"] .seo details { background: #1C1730; }
+html[data-theme="dark"] .sel { background-color: #1C1730; }
+html[data-theme="dark"] .combo .menu { background: #221B36; }
+html[data-theme="dark"] .credits .bar { background: #2A2240; }
+html[data-theme="dark"] .seg button.on { background: #322748; color: var(--fg); box-shadow: none; }
+html[data-theme="dark"] .dropzone:hover,
+html[data-theme="dark"] .dropzone.drag { background: #1C1730; }
+html[data-theme="dark"] .hero-card { background: linear-gradient(180deg, var(--ube-1), #1C1730 62%); }
+html[data-theme="dark"] .errbox { background: linear-gradient(180deg, rgba(214,69,90,.10), #1C1730 60%); }
+/* dark-purple text tokens used as text → lighten on dark backgrounds */
+html[data-theme="dark"] .page-title,
+html[data-theme="dark"] .seo h2 { color: #EBE3FA; }
+html[data-theme="dark"] .seo h3,
+html[data-theme="dark"] .seo .tool,
+html[data-theme="dark"] .btn-ghost,
+html[data-theme="dark"] .menu-btn,
+html[data-theme="dark"] .seo .num { color: #C9B6F2; }
+/* language note banner sets inline colors via JS, so override with !important */
+html[data-theme="dark"] #scriptWarn { background: #221A35 !important; color: #D7C7F5 !important; border-color: #3A2D58 !important; }
+/* theme toggle button */
+.theme-toggle { background: none; border: 1px solid var(--border); border-radius: 8px; width: 36px; height: 30px; cursor: pointer; font-size: 14px; line-height: 1; display: inline-flex; align-items: center; justify-content: center; padding: 0; }
+.theme-toggle:hover { background: var(--ube-1); }
+</style>
+<script>
+  /* Apply saved theme before first paint to avoid a flash of the wrong mode. */
+  (function () {
+    try { if (localStorage.getItem("floyo.autosubs.theme") === "dark") document.documentElement.setAttribute("data-theme", "dark"); } catch (e) {}
+  })();
+</script>
 </head>
 <body class="floyo-base">
 
@@ -481,6 +534,7 @@ body {
       <div class="topbar">
         <div class="crumb">Apps <i class="ic" style="--ic:url(assets/icons/chevron-right.svg)"></i> <b>Auto Subtitles</b></div>
         <nav class="topnav">
+          <button id="themeToggle" class="theme-toggle" type="button" aria-label="Toggle dark mode" title="Toggle dark mode">🌙</button>
           <a href="https://floyo.ai/workflows">Workflows</a>
           <a href="https://floyo.ai/tools">Tools</a>
           <a class="nav-cta" href="https://docs.floyo.ai">API Docs</a>
@@ -504,7 +558,7 @@ body {
               <button class="btn btn-ghost" id="sampleBtn">Try a sample</button>
             </div>
             <div class="formats">
-              <span class="fmt">MP4</span><span class="fmt">MOV</span><span class="fmt">up to 500 MB</span><span class="fmt">≤ 30 min</span>
+              <span class="fmt">MP4</span><span class="fmt">MOV</span><span class="fmt">up to 100 MB</span><span class="fmt">≤ 5 min</span>
             </div>
           </div>
           <div class="poweredby"><i class="ic" style="--ic:url(assets/icons/bolt.svg)"></i> Powered by <b>whisper-auto-subtitles</b> · runs on Floyo</div>
@@ -634,7 +688,7 @@ body {
 
             <div class="cta-bar">
               <button class="btn btn-primary btn-block btn-lg" id="genBtn"><i class="ic" style="--ic:url(assets/icons/bolt.svg)"></i> Generate subtitles</button>
-              <div class="cta-note"><i class="ic" style="--ic:url(assets/icons/info.svg)"></i> About 1–2 min for a 2:34 clip · uses ~12 credits</div>
+              <div class="cta-note"><i class="ic" style="--ic:url(assets/icons/info.svg)"></i> <span id="ctaEst">Estimated time depends on your clip · uses render credits</span></div>
             </div>
           </div>
         </div>
@@ -646,6 +700,7 @@ body {
           <div class="proc-ring"><i class="ic" style="--ic:url(assets/icons/loader.svg)"></i></div>
           <div class="proc-pct" id="procPct">0%</div>
           <div class="proc-status" id="procStatus">Starting up…</div>
+          <div class="proc-est" id="procEst"></div>
           <div class="proc-bar"><i id="procFill"></i></div>
           <div class="steps" id="steps">
             <div class="step pending" data-step="0">
@@ -806,5 +861,22 @@ body {
 
 <input type="file" id="fileInput" accept="video/mp4,video/quicktime,.mp4,.mov" hidden />
 <script src="auto-subtitles.js"></script>
+<script>
+  /* Dark/light toggle: flips data-theme on <html>, persists, swaps icon. */
+  (function () {
+    var KEY = "floyo.autosubs.theme";
+    var btn = document.getElementById("themeToggle");
+    function isDark() { return document.documentElement.getAttribute("data-theme") === "dark"; }
+    function paint() { if (btn) btn.textContent = isDark() ? "☀️" : "🌙"; }
+    paint();
+    if (btn) btn.addEventListener("click", function () {
+      var next = isDark() ? "light" : "dark";
+      if (next === "dark") document.documentElement.setAttribute("data-theme", "dark");
+      else document.documentElement.removeAttribute("data-theme");
+      try { localStorage.setItem(KEY, next); } catch (e) {}
+      paint();
+    });
+  })();
+</script>
 </body>
 </html>
