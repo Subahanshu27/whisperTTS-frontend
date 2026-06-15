@@ -95,7 +95,7 @@ body {
 }
 
 /* ── App shell ──────────────────────────────────────────────────── */
-.layout { display: grid; grid-template-columns: 64px 264px 1fr; height: 100vh; overflow: hidden; }
+.layout { display: grid; grid-template-rows: auto 1fr; height: 100vh; overflow: hidden; }
 
 /* Brand rail */
 .rail { background: var(--ube-10); display: flex; flex-direction: column; align-items: center; padding: 14px 0; gap: 6px; }
@@ -118,6 +118,17 @@ body {
 .appchip .dot .ic { width: 15px; height: 15px; }
 .appchip .nm { font-weight: 700; font-size: 14px; letter-spacing: -0.01em; }
 .appchip .badge { font-family: var(--ff-pixel); font-size: 11px; letter-spacing: .08em; color: var(--ube-6); background: var(--ube-1); border: 1px solid var(--ube-2); border-radius: 4px; padding: 1px 5px; }
+/* header brand (replaces the sidebar) */
+.brand-h { display: flex; align-items: center; gap: 14px; }
+.brand-h .logo { height: 30px; color: var(--ube-7); display: inline-flex; align-items: center; }
+.brand-h .logo svg { height: 30px; width: auto; display: block; }
+.brand-h .appchip { margin-top: 0; gap: 9px; }
+.brand-h .appchip .dot { width: 32px; height: 32px; border-radius: 9px; }
+.brand-h .appchip .dot .ic { width: 18px; height: 18px; }
+.brand-h .appchip .nm { font-size: 17px; }
+.brand-h .appchip .badge { font-size: 12px; padding: 2px 6px; }
+.brand-sep { width: 1px; height: 28px; background: var(--border); display: inline-block; }
+html[data-theme="dark"] .brand-h .logo { color: #D7C7F5; }
 
 .side-body { flex: 1; overflow-y: auto; padding: 16px 14px; display: flex; flex-direction: column; gap: 22px; }
 .newbtn { width: 100%; }
@@ -150,7 +161,9 @@ body {
 /* Main */
 .main { overflow-y: auto; padding: 26px clamp(20px, 5vw, 64px) 96px; }
 .page-head { max-width: 940px; margin: 0 auto 26px; }
-.topbar { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 16px; }
+.topbar { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 13px clamp(20px, 4vw, 44px); }
+.appbar { background: #fff; border-bottom: 1px solid var(--border); }
+html[data-theme="dark"] .appbar { background: #1C1730; border-bottom-color: #2E2746; }
 .topbar .crumb { margin-bottom: 0; }
 .topnav { display: flex; align-items: center; gap: 22px; }
 .topnav a { font-size: 14px; font-weight: 500; color: var(--fg-muted); text-decoration: none; white-space: nowrap; }
@@ -163,6 +176,22 @@ body {
 .crumb b { color: var(--fg); font-weight: 600; }
 .page-title { font-family: var(--ff-sans); font-weight: 800; font-size: clamp(28px, 4vw, 40px); letter-spacing: -0.025em; color: var(--ube-8); margin: 0; line-height: 1.05; }
 .page-sub { font-size: 15px; color: var(--fg-muted); margin: 10px 0 0; max-width: 56ch; line-height: 1.5; }
+/* remove.bg-style two-column hero (landing/empty state) */
+.hero2 { display: grid; grid-template-columns: 1.05fr 1fr; gap: 48px; align-items: center; min-height: 58vh; }
+.hero2-copy .page-title { font-size: clamp(36px, 5.2vw, 60px); line-height: 1.02; }
+.hero2-tag { font-size: 19px; font-weight: 700; color: var(--fg); margin: 20px 0 0; display: flex; align-items: center; gap: 10px; }
+.free-pill { background: var(--ube-6); color: #fff; border-radius: 999px; padding: 3px 14px; font-size: 16px; font-weight: 700; }
+.hero2-copy .page-sub { margin-top: 16px; font-size: 16px; max-width: 44ch; }
+.hero2-upload { display: flex; flex-direction: column; }
+.hero2-upload .dropzone { min-height: 290px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; }
+.hero2-upload .dz-title { font-size: 14px; color: var(--fg-muted); font-weight: 500; margin: 0; }
+.btn-lg { font-size: 16px; padding: 14px 28px; }
+.trysample { display: flex; align-items: center; gap: 14px; margin-top: 18px; }
+.ts-q { font-size: 13px; color: var(--fg-muted); line-height: 1.35; }
+.ts-btn { display: inline-flex; align-items: center; gap: 8px; border: 1px solid var(--border); background: #fff; border-radius: 12px; padding: 10px 16px; font: inherit; font-size: 13.5px; font-weight: 600; color: var(--ube-7); cursor: pointer; transition: border-color .15s, background .15s; }
+.ts-btn:hover { border-color: var(--ube-4); background: var(--ube-1); }
+.hero2-upload .poweredby { margin-top: 16px; }
+@media (max-width: 920px) { .hero2 { grid-template-columns: 1fr; gap: 26px; min-height: 0; } .hero2-copy .page-title { font-size: clamp(30px, 8vw, 42px); } }
 
 .stage { max-width: 940px; margin: 0 auto; }
 [data-state] { display: none; }
@@ -438,6 +467,7 @@ html[data-theme="dark"] .seo .card,
 html[data-theme="dark"] .seo details { background: #1C1730; }
 html[data-theme="dark"] .sel { background-color: #1C1730; }
 html[data-theme="dark"] .combo .menu { background: #221B36; }
+html[data-theme="dark"] .ts-btn { background: #1C1730; color: #C9B6F2; }
 html[data-theme="dark"] .credits .bar { background: #2A2240; }
 html[data-theme="dark"] .seg button.on { background: #322748; color: var(--fg); box-shadow: none; }
 html[data-theme="dark"] .dropzone:hover,
@@ -458,110 +488,58 @@ html[data-theme="dark"] #scriptWarn { background: #221A35 !important; color: #D7
 .theme-toggle { background: none; border: 1px solid var(--border); border-radius: 8px; width: 36px; height: 30px; cursor: pointer; font-size: 14px; line-height: 1; display: inline-flex; align-items: center; justify-content: center; padding: 0; }
 .theme-toggle:hover { background: var(--ube-1); }
 </style>
-<script>
-  /* Apply saved theme before first paint to avoid a flash of the wrong mode. */
-  (function () {
-    try { if (localStorage.getItem("floyo.autosubs.theme") === "dark") document.documentElement.setAttribute("data-theme", "dark"); } catch (e) {}
-  })();
-</script>
 </head>
 <body class="floyo-base">
 
-<button class="menu-btn" id="menuBtn" aria-label="Menu"><i class="ic" style="--ic:url(assets/icons/bullet-list.svg)"></i></button>
-<div class="scrim" id="scrim"></div>
-
 <div class="layout">
 
-  <!-- BRAND RAIL -->
-  <nav class="rail">
-    <div class="mark">f.</div>
-    <div class="ico" title="Home"><i class="ic" style="--ic:url(assets/icons/box-pixel.svg)"></i></div>
-    <div class="ico" title="Discover"><i class="ic" style="--ic:url(assets/icons/search.svg)"></i></div>
-    <div class="ico active" title="Apps"><i class="ic" style="--ic:url(assets/icons/movie-production.svg)"></i></div>
-    <div class="ico" title="Models"><i class="ic" style="--ic:url(assets/icons/model-library.svg)"></i></div>
-    <div class="ico" title="My runs"><i class="ic" style="--ic:url(assets/icons/repeat.svg)"></i></div>
-    <div class="grow"></div>
-    <div class="ico" title="Docs"><i class="ic" style="--ic:url(assets/icons/documentation.svg)"></i></div>
-    <div class="avatar" title="Account"></div>
-  </nav>
-
-  <!-- SIDEBAR -->
-  <aside class="side">
-    <div class="side-top">
-      <div class="brand">
+  <!-- TOP BAR -->
+  <header class="appbar">
+    <div class="topbar">
+      <div class="brand-h">
         <span class="logo" id="logoSlot"></span>
+        <span class="brand-sep"></span>
+        <span class="appchip"><span class="dot"><i class="ic" style="--ic:url(assets/icons/movie-production.svg)"></i></span><span class="nm">Auto Subtitles</span><span class="badge">AI</span></span>
       </div>
-      <div class="appchip">
-        <span class="dot"><i class="ic" style="--ic:url(assets/icons/movie-production.svg)"></i></span>
-        <span class="nm">Auto Subtitles</span>
-        <span class="badge">AI</span>
-      </div>
+      <nav class="topnav">
+        <a href="https://floyo.ai/workflows">Workflows</a>
+        <a class="nav-cta" href="https://docs.floyo.ai">API Docs</a>
+      </nav>
     </div>
-    <div class="side-body">
-      <button class="btn btn-primary btn-block newbtn" id="newBtn"><i class="ic" style="--ic:url(assets/icons/video-add.svg)"></i> New video</button>
-
-      <div class="sec">
-        <div class="lbl">Recent</div>
-        <div class="job" data-demo="result">
-          <div class="thumb"></div>
-          <div class="info"><div class="nm">product-demo-final.mp4</div><div class="meta"><span class="stat-dot ok"></span>Done · 2m ago</div></div>
-        </div>
-        <div class="job" data-demo="processing">
-          <div class="thumb b"></div>
-          <div class="info"><div class="nm">onboarding-walkthrough.mov</div><div class="meta"><span class="stat-dot run"></span>Processing · now</div></div>
-        </div>
-        <div class="job" data-demo="error">
-          <div class="thumb c"></div>
-          <div class="info"><div class="nm">webinar-q2-keynote.mp4</div><div class="meta"><span class="stat-dot err"></span>Failed · 1h ago</div></div>
-        </div>
-        <div class="job" style="pointer-events:none">
-          <div class="skel" style="width:38px;height:26px"></div>
-          <div class="info" style="display:flex;flex-direction:column;gap:6px"><div class="skel" style="width:80%;height:10px"></div><div class="skel" style="width:50%;height:9px"></div></div>
-        </div>
-      </div>
-    </div>
-    <div class="side-foot">
-      <div class="credits">
-        <div class="row"><span class="k"><i class="ic" style="--ic:url(assets/icons/coin.svg);width:14px;height:14px"></i> Render credits</span><span class="v">320 / 500</span></div>
-        <div class="bar"><i></i></div>
-      </div>
-    </div>
-  </aside>
+  </header>
 
   <!-- MAIN -->
   <main class="main" id="main">
-    <div class="page-head">
-      <div class="topbar">
-        <div class="crumb">Apps <i class="ic" style="--ic:url(assets/icons/chevron-right.svg)"></i> <b>Auto Subtitles</b></div>
-        <nav class="topnav">
-          <button id="themeToggle" class="theme-toggle" type="button" aria-label="Toggle dark mode" title="Toggle dark mode">🌙</button>
-          <a href="https://floyo.ai/workflows">Workflows</a>
-          <a href="https://floyo.ai/tools">Tools</a>
-          <a class="nav-cta" href="https://docs.floyo.ai">API Docs</a>
-        </nav>
-      </div>
-      <h1 class="page-title">Auto subtitles</h1>
-      <p class="page-sub">Add accurate, burned-in captions to any video. Powered by the Whisper auto-subtitles workflow on Floyo.</p>
-    </div>
 
     <div class="stage" id="stage">
 
       <!-- EMPTY / UPLOAD -->
       <section data-state="empty" class="on">
-        <div class="card hero-card">
-          <div class="dropzone" id="dropzone">
-            <div class="dz-ico"><i class="ic" style="--ic:url(assets/icons/cloud.svg)"></i></div>
-            <div class="dz-title">Drop a video or click to upload</div>
-            <div class="dz-sub">We’ll transcribe the audio and burn styled captions right into the file.</div>
-            <div class="dz-actions">
-              <button class="btn btn-primary" id="pickBtn"><i class="ic" style="--ic:url(assets/icons/video-add.svg)"></i> Choose file</button>
-              <button class="btn btn-ghost" id="sampleBtn">Try a sample</button>
-            </div>
-            <div class="formats">
-              <span class="fmt">MP4</span><span class="fmt">MOV</span><span class="fmt">up to 100 MB</span><span class="fmt">≤ 5 min</span>
-            </div>
+        <div class="hero2">
+          <div class="hero2-copy">
+            <h1 class="page-title">Add subtitles to your video</h1>
+            <p class="hero2-tag">100% automatic and <span class="free-pill">Free</span></p>
+            <p class="page-sub">Accurate, burned-in captions for any clip — no login, no watermark. Powered by Whisper on Floyo.</p>
           </div>
-          <div class="poweredby"><i class="ic" style="--ic:url(assets/icons/bolt.svg)"></i> Powered by <b>whisper-auto-subtitles</b> · runs on Floyo</div>
+          <div class="hero2-upload">
+            <div class="card hero-card">
+              <div class="dropzone" id="dropzone">
+                <div class="dz-ico"><i class="ic" style="--ic:url(assets/icons/cloud.svg)"></i></div>
+                <div class="dz-actions">
+                  <button class="btn btn-primary btn-lg" id="pickBtn"><i class="ic" style="--ic:url(assets/icons/video-add.svg)"></i> Choose video</button>
+                </div>
+                <div class="dz-title">or drop a file</div>
+                <div class="formats">
+                  <span class="fmt">MP4</span><span class="fmt">MOV</span><span class="fmt">up to 100 MB</span><span class="fmt">≤ 5 min</span>
+                </div>
+              </div>
+            </div>
+            <div class="trysample">
+              <span class="ts-q">No video?<br><b>Try a sample:</b></span>
+              <button class="ts-btn" id="sampleBtn" type="button" title="Run the sample clip"><i class="ic" style="--ic:url(assets/icons/video-add.svg)"></i> Sample clip</button>
+            </div>
+            <div class="poweredby"><i class="ic" style="--ic:url(assets/icons/bolt.svg)"></i> Powered by <b>Floyo</b></div>
+          </div>
         </div>
       </section>
 
@@ -834,17 +812,6 @@ html[data-theme="dark"] #scriptWarn { background: #221A35 !important; color: #D7
         </div>
       </section>
 
-      <section class="sec">
-        <h2>More free AI tools</h2>
-        <p class="intro">More open-source AI workflows running on Floyo.</p>
-        <div class="tools">
-          <a class="tool" href="https://floyo.ai/tools/ai-image-generator">🖼&nbsp; AI Image Generator</a>
-          <a class="tool" href="https://floyo.ai/tools/ai-video-generator">🎬&nbsp; AI Video Generator</a>
-          <a class="tool" href="https://floyo.ai/tools/background-remover">✂&nbsp; Background Remover</a>
-          <a class="tool" href="https://floyo.ai/tools/image-upscaler">🔍&nbsp; Image Upscaler</a>
-        </div>
-      </section>
-
       <div class="foot">
         <div>© 2026 Floyo. All rights reserved.</div>
         <div>
@@ -861,22 +828,5 @@ html[data-theme="dark"] #scriptWarn { background: #221A35 !important; color: #D7
 
 <input type="file" id="fileInput" accept="video/mp4,video/quicktime,.mp4,.mov" hidden />
 <script src="auto-subtitles.js"></script>
-<script>
-  /* Dark/light toggle: flips data-theme on <html>, persists, swaps icon. */
-  (function () {
-    var KEY = "floyo.autosubs.theme";
-    var btn = document.getElementById("themeToggle");
-    function isDark() { return document.documentElement.getAttribute("data-theme") === "dark"; }
-    function paint() { if (btn) btn.textContent = isDark() ? "☀️" : "🌙"; }
-    paint();
-    if (btn) btn.addEventListener("click", function () {
-      var next = isDark() ? "light" : "dark";
-      if (next === "dark") document.documentElement.setAttribute("data-theme", "dark");
-      else document.documentElement.removeAttribute("data-theme");
-      try { localStorage.setItem(KEY, next); } catch (e) {}
-      paint();
-    });
-  })();
-</script>
 </body>
 </html>

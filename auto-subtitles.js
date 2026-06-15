@@ -242,6 +242,7 @@
     // (Auto-detect language, Roboto font, medium size, white text, bottom).
     function startFresh() {
       abortActiveRun();
+      app._autoRunSample = false;
       app._file = null;
       app._videoH = 0; app._videoW = 0;
       if (app._fileURL) { try { URL.revokeObjectURL(app._fileURL); } catch (e) {} app._fileURL = null; }
@@ -581,6 +582,7 @@
       app.settings.lang = "en";                   // the bundled sample is English
       app.settings.font = recommendedFontFor("en");
       var fs = $("#fontSel"); if (fs) fs.value = app.settings.font;
+      app._autoRunSample = true;                  // run end-to-end once it loads
       setState("loading");
       fetch(SAMPLE_URL, { cache: "force-cache" })
         .then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.blob(); })
@@ -608,7 +610,7 @@
   
     $("#replaceBtn").addEventListener("click", function () { fileInput.click(); });
     $("#removeBtn").addEventListener("click", function () { abortActiveRun(); app._file = null; if (app._fileURL) { try { URL.revokeObjectURL(app._fileURL); } catch (e) {} app._fileURL = null; } clearPreviewVideo(); setState("empty"); });
-    $("#newBtn").addEventListener("click", function () { startFresh(); closeNav(); });
+    var nb = $("#newBtn"); if (nb) nb.addEventListener("click", function () { startFresh(); closeNav(); });
   
     /* ════════════════════════════════════════════════════════════════
        SETTINGS MAPPING — frontend knobs → Flask /api/subtitle form fields
@@ -1007,6 +1009,8 @@
         if (v.duration > MAX_DURATION_SEC) { rejectLongVideo(v.duration); return; }
         try { v.currentTime = Math.min(0.1, (v.duration || 1) / 2); } catch (e) {} // render a poster frame
         if (app.state === "ready") syncControls();
+        // "Try a sample" runs the whole thing automatically once metadata is in.
+        if (app._autoRunSample) { app._autoRunSample = false; runProcessing(); }
       };
   
       function toggle() { if (v.paused) { v.muted = false; v.play(); } else { v.pause(); } }
@@ -1037,6 +1041,7 @@
     }
   
     function rejectLongVideo(durationSec) {
+      app._autoRunSample = false;
       clearPreviewVideo();
       if (app._fileURL) { try { URL.revokeObjectURL(app._fileURL); } catch (e) {} app._fileURL = null; }
       app._file = null;
@@ -1285,8 +1290,8 @@
     // ── Mobile nav ──
     function openNav() { document.body.classList.add("nav-open"); }
     function closeNav() { document.body.classList.remove("nav-open"); }
-    $("#menuBtn").addEventListener("click", openNav);
-    $("#scrim").addEventListener("click", closeNav);
+    var mb = $("#menuBtn"); if (mb) mb.addEventListener("click", openNav);
+    var sc = $("#scrim"); if (sc) sc.addEventListener("click", closeNav);
     // Esc closes the mobile drawer.
     document.addEventListener("keydown", function (e) {
       if (e.key === "Escape" && document.body.classList.contains("nav-open")) closeNav();
@@ -1357,7 +1362,6 @@
   
     // ── Boot ──
     trimUnsupportedControls();
-    setupResponsiveSidebar();
     setupRail();
     renderRecent();
     syncControls();
