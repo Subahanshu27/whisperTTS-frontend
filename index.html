@@ -3,30 +3,30 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>AI Subtitle Generator — Free Auto Captions for Video | Floyo</title>
-<meta name="description" content="Add accurate, burned-in captions to any video for free. No login, no watermark. Powered by an open-source Whisper workflow on Floyo — upload, pick a language, style your captions, and download an MP4." />
+<title>AI Subtitle Generator Online | Floyo</title>
+<meta name="description" content="Auto-generate subtitles and captions for any video. Powered by Floyo using Whisper TTS model. Free, no login, no watermark — upload, pick a language, and download an MP4." />
 
 <!-- Update this canonical/og URL to your live deployment URL before launch -->
 <link rel="canonical" href="https://floyo.ai/tools/ai-subtitle-generator" />
 
 <!-- Open Graph -->
-<meta property="og:title" content="AI Subtitle Generator — Free Auto Captions for Video | Floyo" />
-<meta property="og:description" content="Add accurate, burned-in captions to any video for free. No login, no watermark. Built on an open-source Whisper workflow on Floyo." />
+<meta property="og:title" content="AI Subtitle Generator Online | Floyo" />
+<meta property="og:description" content="Auto-generate subtitles and captions for any video. Powered by Floyo using Whisper TTS model." />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://floyo.ai/tools/ai-subtitle-generator" />
 <meta property="og:image" content="https://floyo.ai/og/ai-subtitle-generator.png" />
 
 <!-- Twitter Card -->
 <meta name="twitter:card" content="summary_large_image" />
-<meta name="twitter:title" content="AI Subtitle Generator — Free Auto Captions for Video | Floyo" />
-<meta name="twitter:description" content="Add accurate, burned-in captions to any video for free. No login, no watermark." />
+<meta name="twitter:title" content="AI Subtitle Generator Online | Floyo" />
+<meta name="twitter:description" content="Auto-generate subtitles and captions for any video. Powered by Floyo using Whisper TTS model." />
 
 <!-- Schema: WebApplication -->
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "WebApplication",
-  "name": "Floyo AI Subtitle Generator",
+  "name": "AI Subtitle Generator Online",
   "url": "https://floyo.ai/tools/ai-subtitle-generator",
   "applicationCategory": "MultimediaApplication",
   "operatingSystem": "Web browser",
@@ -487,6 +487,22 @@ html[data-theme="dark"] #scriptWarn { background: #221A35 !important; color: #D7
 /* theme toggle button */
 .theme-toggle { background: none; border: 1px solid var(--border); border-radius: 8px; width: 36px; height: 30px; cursor: pointer; font-size: 14px; line-height: 1; display: inline-flex; align-items: center; justify-content: center; padding: 0; }
 .theme-toggle:hover { background: var(--ube-1); }
+/* header logo + powered-by links */
+.logo-link { display: inline-flex; align-items: center; text-decoration: none; }
+.logo-link:hover { opacity: .85; text-decoration: none; }
+.floyo-link { color: inherit; text-decoration: none; }
+.floyo-link:hover { text-decoration: underline; }
+/* Floyo API key field */
+.grp-h .grp-ic { color: var(--ube-6); flex: none; margin-right: 2px; }
+.keyrow { display: flex; align-items: center; gap: 8px; }
+.keyinput { flex: 1 1 auto; min-width: 0; height: 42px; border: 1px solid var(--border); border-radius: 12px; padding: 0 14px; font: inherit; font-size: 14px; color: var(--fg); background: #fff; }
+.keyinput::placeholder { color: var(--fg-subtle); }
+.keyinput:focus { outline: none; border-color: var(--ube-5); box-shadow: 0 0 0 3px var(--ube-1); }
+.keyinput.invalid { border-color: #DC5A6E; box-shadow: 0 0 0 3px rgba(220,90,110,.18); }
+.keyeye { flex: none; width: 42px; height: 42px; border: 1px solid var(--border); border-radius: 12px; background: #fff; color: var(--fg-muted); display: inline-flex; align-items: center; justify-content: center; cursor: pointer; transition: color .15s, border-color .15s; }
+.keyeye:hover, .keyeye.on { color: var(--ube-6); border-color: var(--ube-3); }
+.keyhint { font-size: 12.5px; color: var(--fg-subtle); margin-top: 8px; }
+.keyhint a { color: var(--ube-6); font-weight: 600; }
 </style>
 </head>
 <body class="floyo-base">
@@ -497,7 +513,7 @@ html[data-theme="dark"] #scriptWarn { background: #221A35 !important; color: #D7
   <header class="appbar">
     <div class="topbar">
       <div class="brand-h">
-        <span class="logo" id="logoSlot"></span>
+        <a class="logo-link" href="https://floyo.ai" target="_blank" rel="noopener" aria-label="Floyo home"><span class="logo" id="logoSlot"></span></a>
         <span class="brand-sep"></span>
         <span class="appchip"><span class="dot"><i class="ic" style="--ic:url(assets/icons/movie-production.svg)"></i></span><span class="nm">Auto Subtitles</span><span class="badge">AI</span></span>
       </div>
@@ -517,9 +533,9 @@ html[data-theme="dark"] #scriptWarn { background: #221A35 !important; color: #D7
       <section data-state="empty" class="on">
         <div class="hero2">
           <div class="hero2-copy">
-            <h1 class="page-title">Add subtitles to your video</h1>
+            <h1 class="page-title">Free AI Subtitle Generator Online</h1>
             <p class="hero2-tag">100% automatic and <span class="free-pill">Free</span></p>
-            <p class="page-sub">Accurate, burned-in captions for any clip — no login, no watermark. Powered by Whisper on Floyo.</p>
+            <p class="page-sub">Auto-generate subtitles and captions for any video. Powered by Floyo using Whisper TTS model.</p>
           </div>
           <div class="hero2-upload">
             <div class="card hero-card">
@@ -538,7 +554,7 @@ html[data-theme="dark"] #scriptWarn { background: #221A35 !important; color: #D7
               <span class="ts-q">No video?<br><b>Try a sample:</b></span>
               <button class="ts-btn" id="sampleBtn" type="button" title="Run the sample clip"><i class="ic" style="--ic:url(assets/icons/video-add.svg)"></i> Sample clip</button>
             </div>
-            <div class="poweredby"><i class="ic" style="--ic:url(assets/icons/bolt.svg)"></i> Powered by <b>Floyo</b></div>
+            <div class="poweredby"><i class="ic" style="--ic:url(assets/icons/bolt.svg)"></i> Powered by <a class="floyo-link" href="https://floyo.ai" target="_blank" rel="noopener"><b>Floyo</b></a></div>
           </div>
         </div>
       </section>
@@ -590,6 +606,20 @@ html[data-theme="dark"] #scriptWarn { background: #221A35 !important; color: #D7
 
           <!-- SETTINGS -->
           <div class="card panel">
+            <!-- Floyo API key -->
+            <div class="panel-grp">
+              <div class="grp-h"><svg class="grp-ic" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="15" r="4"/><path d="M10.85 12.15 19 4"/><path d="m18 5 2 2"/><path d="m15 8 2 2"/></svg><span class="t">Floyo API key</span></div>
+              <div class="field">
+                <div class="keyrow">
+                  <input type="password" id="apiKey" class="keyinput" placeholder="Paste your Floyo API key" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" />
+                  <button type="button" class="keyeye" id="apiKeyToggle" aria-label="Show or hide API key" title="Show / hide">
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"/><circle cx="12" cy="12" r="3"/></svg>
+                  </button>
+                </div>
+                <div class="keyhint">Used to run this workflow on your account. <a href="https://docs.floyo.ai/how-to-generate-and-use-floyo-api-key" target="_blank" rel="noopener">Find your key →</a></div>
+              </div>
+            </div>
+
             <!-- Transcription -->
             <div class="panel-grp">
               <div class="grp-h"><i class="ic" style="--ic:url(assets/icons/earth.svg)"></i><span class="t">Transcription</span></div>

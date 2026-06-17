@@ -242,6 +242,7 @@
     // (Auto-detect language, Roboto font, medium size, white text, bottom).
     function startFresh() {
       abortActiveRun();
+      clearApiKey();
       app._autoRunSample = false;
       app._file = null;
       app._videoH = 0; app._videoW = 0;
@@ -531,6 +532,7 @@
   
       // Abort any run/poll still in flight for a previous file, and fully reset
       // per-file state so nothing from the last video can leak into this one.
+      clearApiKey();   // every new video re-asks for the key (never remembered)
       abortActiveRun();
       app._file = file;
       app._jobId = null;
@@ -647,6 +649,7 @@
       var font_color = COLOR_NAMES[(s.text || "").toUpperCase()] || s.text || "white";
   
       fd.append("model", "large");
+      fd.append("api_key", (document.getElementById("apiKey") && document.getElementById("apiKey").value.trim()) || "");
       fd.append("language", whisperLangValue(s.lang));
       fd.append("font_color", font_color);
       fd.append("font_family", s.font || "Roboto-Bold.ttf");
@@ -765,6 +768,18 @@
     function runProcessing() {
       if (!app._file) {
         showError("No video selected", "Choose a video first — then hit Generate subtitles and it’ll run through the Floyo workflow.", "no file in memory");
+        return;
+      }
+      var apiKeyEl = document.getElementById("apiKey");
+      if (!apiKeyEl || !apiKeyEl.value.trim()) {
+        // No key — can't run on the user's account. Prompt and flash the field.
+        toast("Add your Floyo API key to run this.");
+        if (apiKeyEl) {
+          apiKeyEl.classList.add("invalid");
+          apiKeyEl.scrollIntoView({ behavior: "smooth", block: "center" });
+          setTimeout(function () { apiKeyEl.classList.remove("invalid"); }, 1600);
+          try { apiKeyEl.focus(); } catch (e) {}
+        }
         return;
       }
       if (!app.settings.lang) {
@@ -1361,7 +1376,28 @@
     }
   
     // ── Boot ──
+    function setupApiKey() {
+      var input = document.getElementById("apiKey");
+      var toggle = document.getElementById("apiKeyToggle");
+      if (!input) return;
+      input.value = "";                       // never pre-filled or remembered
+      input.addEventListener("input", function () { input.classList.remove("invalid"); });
+      if (toggle) toggle.addEventListener("click", function () {
+        var reveal = input.type === "password";
+        input.type = reveal ? "text" : "password";
+        toggle.classList.toggle("on", reveal);
+      });
+    }
+    // Clear the API key whenever the flow resets to a new video, so it's always
+    // re-entered for each upload / sample / fresh page.
+    function clearApiKey() {
+      var input = document.getElementById("apiKey");
+      if (input) { input.value = ""; input.type = "password"; input.classList.remove("invalid"); }
+      var toggle = document.getElementById("apiKeyToggle");
+      if (toggle) toggle.classList.remove("on");
+    }
     trimUnsupportedControls();
+    setupApiKey();
     setupRail();
     renderRecent();
     syncControls();
