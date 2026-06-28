@@ -6,14 +6,14 @@
 <title>AI Subtitle Generator Online | Floyo</title>
 <meta name="description" content="Auto-generate subtitles and captions for any video. Powered by Floyo using Whisper TTS model. Free, no login, no watermark — upload, pick a language, and download an MP4." />
 
-<!-- Update this canonical/og URL to your live deployment URL before launch -->
-<link rel="canonical" href="https://floyo.ai/tools/ai-subtitle-generator" />
+<!-- Live deployment URL -->
+<link rel="canonical" href="https://aisubtitlesgenerator.org/" />
 
 <!-- Open Graph -->
 <meta property="og:title" content="AI Subtitle Generator Online | Floyo" />
 <meta property="og:description" content="Auto-generate subtitles and captions for any video. Powered by Floyo using Whisper TTS model." />
 <meta property="og:type" content="website" />
-<meta property="og:url" content="https://floyo.ai/tools/ai-subtitle-generator" />
+<meta property="og:url" content="https://aisubtitlesgenerator.org/" />
 <meta property="og:image" content="https://floyo.ai/og/ai-subtitle-generator.png" />
 
 <!-- Twitter Card -->
@@ -503,6 +503,12 @@ html[data-theme="dark"] #scriptWarn { background: #221A35 !important; color: #D7
 .keyeye:hover, .keyeye.on { color: var(--ube-6); border-color: var(--ube-3); }
 .keyhint { font-size: 12.5px; color: var(--fg-subtle); margin-top: 8px; }
 .keyhint a { color: var(--ube-6); font-weight: 600; }
+.keywarn { display: flex; gap: 8px; align-items: flex-start; margin-top: 10px; padding: 10px 12px; border: 1px solid #F4D27A; background: #FFF8E6; border-radius: 10px; font-size: 12.5px; line-height: 1.45; color: #7A5B12; }
+.keywarn .kw-ic { flex: 0 0 auto; width: 16px; height: 16px; margin-top: 1px; color: #C7920F; }
+.keywarn strong { font-weight: 700; color: #6B4E0D; }
+html[data-theme="dark"] .keywarn { background: #2A2410; border-color: #5C4A1A; color: #E7CE8E; }
+html[data-theme="dark"] .keywarn strong { color: #F2DFA6; }
+html[data-theme="dark"] .keywarn .kw-ic { color: #E0B247; }
 </style>
 </head>
 <body class="floyo-base">
@@ -617,6 +623,10 @@ html[data-theme="dark"] #scriptWarn { background: #221A35 !important; color: #D7
                   </button>
                 </div>
                 <div class="keyhint">Used to run this workflow on your account. <a href="https://docs.floyo.ai/how-to-generate-and-use-floyo-api-key" target="_blank" rel="noopener">Find your key →</a></div>
+                <div class="keywarn" role="note">
+                  <svg class="kw-ic" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                  <span><strong>Security notice:</strong> Use this key only to try the app, then <strong>disable it immediately</strong> in your Floyo settings after testing — do not leave it active.</span>
+                </div>
               </div>
             </div>
 
