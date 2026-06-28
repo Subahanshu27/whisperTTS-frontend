@@ -11,7 +11,7 @@
        CONFIG — where the Flask backend is running.
        The Flask demo listens on :5000 by default.
        ════════════════════════════════════════════════════════════════ */
-    var API_BASE = "https://3.224.107.180.nip.io";
+    var API_BASE = "https://api.aisubtitlesgenerator.org";
     var POLL_MS = 2500; // matches the backend's POLL_INTERVAL_SECONDS
     // Floyo's CDN sits behind Cloudflare, which caps upload bodies at 100 MB.
     // Larger files fail with a Cloudflare 413 *after* uploading, so reject them
